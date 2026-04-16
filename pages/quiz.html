@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — 문제 풀이</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416c">
+</head>
+<body>
+<div class="page">
+  <section id="screen-quiz" style="display:block;">
+    <header class="nav">
+      <div class="nav-left">
+        <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+          <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+          <span class="nav-brand-name">Passio</span>
+        </a>
+        <nav class="nav-menu" aria-label="페이지 이동">
+          <a class="nav-link" href="/pages/dashboard.html">대시보드</a>
+          <a class="nav-link" href="/pages/history.html">히스토리</a>
+        </nav>
+      </div>
+      <div class="nav-r">
+        <span class="kbd" id="quiz-time">00:00</span>
+        <span class="nav-user" id="ava-quiz">학습자</span>
+        <button class="btn btn-out btn-sm" id="btn-exit">나가기</button>
+      </div>
+    </header>
+    <main class="quiz-layout">
+      <div id="quiz-loading" class="card panel" style="text-align:center;">문제를 불러오는 중...</div>
+      <div id="quiz-content" style="display:none;">
+        <div class="quiz-top">
+          <div>문제 <strong id="q-current">1</strong>/<strong id="q-total">50</strong> · 남은 문제 <strong id="remain-count">49</strong></div>
+          <div class="badge" id="q-subject">네트워크 관리사 2급 · 1과목 TCP/IP</div>
+        </div>
+        <div class="progress"><div id="q-progress"></div></div>
+        <section class="card question-card">
+          <div class="question-no" id="q-no">문제 1</div>
+          <div class="question-text" id="q-text"></div>
+          <div class="options" id="q-options"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap;">
+            <div class="muted" style="font-size:12px;">단축키: <span class="kbd">1</span>~<span class="kbd">4</span>, <span class="kbd">Enter</span></div>
+            <button class="btn primary" id="btn-next" disabled>다음 문제</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <section id="screen-result" style="display:none;">
+    <header class="nav">
+      <div class="nav-left">
+        <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+          <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+          <span class="nav-brand-name">Passio</span>
+        </a>
+        <nav class="nav-menu" aria-label="페이지 이동">
+          <a class="nav-link" href="/pages/dashboard.html">대시보드</a>
+          <a class="nav-link" href="/pages/history.html">히스토리</a>
+        </nav>
+      </div>
+      <div class="nav-r">
+        <span class="kbd" id="spent-time">00:00</span>
+        <span class="nav-user" id="ava-result">학습자</span>
+      </div>
+    </header>
+    <main class="quiz-layout">
+      <section class="card panel" style="text-align:center;margin-bottom:12px;">
+        <div class="score" id="score">0점</div>
+        <div id="score-msg" class="muted">수고하셨습니다.</div>
+        <div id="save-msg" class="muted" style="font-size:12px;margin-top:6px;">기록 저장 중...</div>
+        <div class="tags">
+          <span class="tag ok" id="score-ok">정답 0개</span>
+          <span class="tag ng" id="score-ng">오답 0개</span>
+        </div>
+      </section>
+      <h3 style="margin:12px 0 8px;">문제별 결과</h3>
+      <div id="result-list"></div>
+      <div class="row" style="margin-top:12px;">
+        <button class="btn ghost" id="btn-retry">다시 풀기</button>
+        <button class="btn primary" id="btn-home">홈으로</button>
+      </div>
+    </main>
+  </section>
+</div>
+<script src="/assets/js/quiz-session-page.js?v=20260416f"></script>
+</body>
+</html>

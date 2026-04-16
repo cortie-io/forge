@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — AI 해설</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416i">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <div class="nav-left">
+      <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+        <span class="nav-brand-name">Passio</span>
+      </a>
+      <nav class="nav-menu" aria-label="페이지 이동">
+        <a class="nav-link" href="/pages/dashboard.html">대시보드</a>
+        <a class="nav-link active" href="/pages/ai-explain.html">AI 해설</a>
+        <a class="nav-link" href="/pages/question-bank.html">문제은행</a>
+        <a class="nav-link" href="/pages/history.html">히스토리</a>
+        <a class="nav-link" href="/pages/api-token.html">API 토큰</a>
+      </nav>
+    </div>
+    <div class="nav-r">
+      <span class="nav-user" id="ava-explain">학습자</span>
+      <button class="btn btn-out btn-sm" id="btn-logout">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="container section explain-layout">
+    <section class="dash-headline">
+      <span class="dash-pill">AI Explain Studio</span>
+      <h2><span id="user-name">학습자</span>님의 AI 해설 생성기</h2>
+      <p class="sub">문제와 보기 4개를 입력하고, 선택한 오답과 실제 정답을 선택사항으로 넣어주세요. 분석은 비동기로 처리되며, 중간에 페이지를 떠나도 히스토리에서 결과를 다시 열어볼 수 있습니다.</p>
+    </section>
+
+    <section class="card panel explain-panel">
+      <div class="field">
+        <label for="question-input">문제</label>
+        <textarea id="question-input" class="explain-textarea" rows="4" placeholder="예: 네트워크관리사 2급에서 서브넷 마스크 255.255.255.192는 CIDR 표기로 무엇인가?"></textarea>
+      </div>
+
+      <div class="explain-option-grid">
+        <div class="field"><label for="opt-1">보기 1</label><input id="opt-1" type="text" placeholder="첫 번째 보기"></div>
+        <div class="field"><label for="opt-2">보기 2</label><input id="opt-2" type="text" placeholder="두 번째 보기"></div>
+        <div class="field"><label for="opt-3">보기 3</label><input id="opt-3" type="text" placeholder="세 번째 보기"></div>
+        <div class="field"><label for="opt-4">보기 4</label><input id="opt-4" type="text" placeholder="네 번째 보기"></div>
+      </div>
+
+      <div class="explain-meta-grid">
+        <div class="field">
+          <label for="wrong-choice">내가 고른 오답 (선택)</label>
+          <input id="wrong-choice" type="text" placeholder="예: cp (비워두면 자동 '-')">
+        </div>
+        <div class="field">
+          <label for="answer-choice">실제 정답 (선택)</label>
+          <input id="answer-choice" type="text" placeholder="예: mv (비워두면 자동 '-')">
+        </div>
+      </div>
+
+      <div class="explain-hint-list">
+        <span class="dash-chip">오답 선택 제공 시: 오답 분석 표시</span>
+        <span class="dash-chip">오답 미제공 시: 함정 탈출 꿀팁 표시</span>
+        <span class="dash-chip">결과는 히스토리에 자동 저장</span>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-navy" id="btn-solve" type="button">Solve</button>
+        <a class="btn btn-out" href="/pages/history.html">히스토리 보기</a>
+      </div>
+      <div class="msg" id="explain-msg"></div>
+    </section>
+  </main>
+</div>
+<script src="/assets/js/ai-explain-page.js?v=20260416i"></script>
+</body>
+</html>

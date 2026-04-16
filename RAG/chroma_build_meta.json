@@ -1,0 +1,6 @@
+{
+  "embedding_provider": "ollama",
+  "ollama_host": "http://robotandi.deamon.io:11434",
+  "ollama_embed_model": "nomic-embed-text",
+  "document_count": 584
+}

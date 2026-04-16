@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — 풀이 히스토리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416c">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <div class="nav-left">
+      <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+        <span class="nav-brand-name">Passio</span>
+      </a>
+      <nav class="nav-menu" aria-label="페이지 이동">
+        <a class="nav-link" href="/pages/dashboard.html">대시보드</a>
+        <a class="nav-link" href="/pages/ai-explain.html">AI 해설</a>
+        <a class="nav-link" href="/pages/question-bank.html">문제은행</a>
+        <a class="nav-link active" href="/pages/history.html">히스토리</a>
+        <a class="nav-link" href="/pages/api-token.html">API 토큰</a>
+      </nav>
+    </div>
+    <div class="nav-r">
+      <span class="nav-user" id="ava-history">학습자</span>
+      <button class="btn btn-out btn-sm" id="btn-logout">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="container section history-layout">
+    <section class="dash-headline">
+      <span class="dash-pill">Study History</span>
+      <h2><span id="user-name">학습자</span>님의 학습 기록</h2>
+      <p class="sub">퀴즈 풀이 기록과 AI 해설 생성 기록을 한 곳에서 다시 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="history-group">
+      <div class="history-group-head">
+        <h3>퀴즈 풀이 기록</h3>
+        <a class="btn btn-out btn-sm" href="/pages/dashboard.html">퀴즈 시작</a>
+      </div>
+      <section id="quiz-history-list" class="history-list"></section>
+      <section id="quiz-history-empty" class="card panel" style="display:none;text-align:center;">
+        아직 저장된 퀴즈 기록이 없습니다. 첫 퀴즈를 시작해보세요.
+      </section>
+    </section>
+
+    <section class="history-group">
+      <div class="history-group-head">
+        <h3>AI 해설 기록</h3>
+        <a class="btn btn-navy btn-sm" href="/pages/ai-explain.html">새 AI 해설 만들기</a>
+      </div>
+      <section id="rag-history-list" class="history-list"></section>
+      <section id="rag-history-empty" class="card panel" style="display:none;text-align:center;">
+        아직 저장된 AI 해설 기록이 없습니다. 새 문제를 입력해 분석을 시작해보세요.
+      </section>
+    </section>
+  </main>
+</div>
+<script src="/assets/js/history-page.js?v=20260416i"></script>
+</body>
+</html>

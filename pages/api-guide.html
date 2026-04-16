@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio API 사용 가이드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416h">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <div class="nav-left">
+      <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+        <span class="nav-brand-name">Passio</span>
+      </a>
+      <nav class="nav-menu" aria-label="페이지 이동">
+        <a class="nav-link" href="/pages/index.html">홈</a>
+        <a class="nav-link" href="/pages/login.html">로그인</a>
+        <a class="nav-link active" href="/pages/api-guide.html">API 가이드</a>
+      </nav>
+    </div>
+    <div class="nav-r">
+      <a class="btn btn-out btn-sm" href="/pages/login.html">로그인</a>
+      <a class="btn btn-navy btn-sm" href="/pages/signup.html">회원가입</a>
+    </div>
+  </header>
+
+  <main class="container section doc-layout">
+    <section class="dash-headline">
+      <span class="dash-pill">Public Documentation</span>
+      <h1 class="doc-title">Passio RAG API 사용 설명서</h1>
+      <p class="sub">이 페이지는 로그인 없이 누구나 열람할 수 있습니다. 실제 호출은 발급받은 API 토큰이 필요합니다.</p>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>1. 빠른 시작</h2>
+      <p>가장 먼저 아래 한 줄을 실행하면 됩니다.</p>
+      <pre class="doc-code"><code>curl --max-time 1000 -X POST "https://sikdorak.org/api/rag/solve" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Token: psk_xxxxxxxxxxxxxxxxxxxxxxxxx" \
+  -d '{
+    "items": [
+      {
+        "q": "네트워크관리사 2급: IPv4 주소 192.168.10.130/26이 속한 네트워크 주소는?",
+        "opts": "1) 192.168.10.0, 2) 192.168.10.64, 3) 192.168.10.128, 4) 192.168.10.192",
+        "wrong": "2) 192.168.10.64",
+        "ans": "3) 192.168.10.128"
+      }
+    ],
+    "rebuild_db": false
+  }'</code></pre>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>2. 엔드포인트 정보</h2>
+      <table class="doc-table">
+        <tbody>
+          <tr><th>Method</th><td>POST</td></tr>
+          <tr><th>URL</th><td>https://sikdorak.org/api/rag/solve</td></tr>
+          <tr><th>Content-Type</th><td>application/json</td></tr>
+          <tr><th>인증</th><td>X-API-Token 또는 로그인 세션</td></tr>
+          <tr><th>요청 제한</th><td>한 번에 최대 50문항</td></tr>
+          <tr><th>서버 대기시간</th><td>최대 900초 (15분)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>3. API 토큰 발급 방법</h2>
+      <ol class="doc-list">
+        <li>Passio 웹 로그인 후 상단 메뉴에서 API 토큰 페이지로 이동</li>
+        <li>비밀번호를 한 번 더 입력하고 토큰 조회 버튼 클릭</li>
+        <li>조회된 토큰을 복사해 API 요청 헤더에 넣어 사용</li>
+      </ol>
+      <p>보안 정책: API 토큰은 30일 유효, 만료 시 다음 조회 시점에 새 토큰으로 자동 갱신됩니다.</p>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>4. 요청 바디 스키마</h2>
+      <pre class="doc-code"><code>{
+  "items": [
+    {
+      "q": "문제 본문 (필수)",
+      "opts": "보기 문자열 (필수)",
+      "wrong": "사용자가 고른 오답 (필수)",
+      "ans": "정답 (필수)"
+    }
+  ],
+  "rebuild_db": false
+}</code></pre>
+      <table class="doc-table">
+        <thead>
+          <tr><th>필드</th><th>타입</th><th>설명</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>items</td><td>array</td><td>풀이할 문항 목록</td></tr>
+          <tr><td>items[].q</td><td>string</td><td>문제 질문</td></tr>
+          <tr><td>items[].opts</td><td>string</td><td>보기(예: 1) ... 2) ...)</td></tr>
+          <tr><td>items[].wrong</td><td>string</td><td>오답 선택값</td></tr>
+          <tr><td>items[].ans</td><td>string</td><td>정답 선택값</td></tr>
+          <tr><td>rebuild_db</td><td>boolean</td><td>RAG DB 재생성 여부 (기본 false 권장)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>5. 인증 방식</h2>
+      <p>아래 세 가지 중 하나를 사용하세요.</p>
+      <pre class="doc-code"><code># 1) 권장: API 토큰
+-H "X-API-Token: psk_xxx"
+
+# 2) 대체: Authorization ApiKey
+-H "Authorization: ApiKey psk_xxx"
+
+# 3) 대체: Authorization Bearer (psk_ 토큰)
+-H "Authorization: Bearer psk_xxx"</code></pre>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>6. 응답 예시</h2>
+      <pre class="doc-code"><code>{
+  "ok": true,
+  "total": 1,
+  "results": [
+    {
+      "report": {
+        "header": {
+          "ans": "3) 192.168.10.128",
+          "keyword": "IPv4, 서브넷, /26",
+          "level": "중급"
+        },
+        "body": {
+          "overview": "...",
+          "analysis": {
+            "1": "...",
+            "2": "..."
+          },
+          "correction": "...",
+          "insight": "...",
+          "audit": {
+            "evidence_ids": ["1", "2"],
+            "source": "교재 근거"
+          },
+          "magic_tip": "..."
+        }
+      },
+      "evidence": [
+        { "id": 1, "text": "..." }
+      ]
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>7. 에러 코드 가이드</h2>
+      <table class="doc-table">
+        <thead>
+          <tr><th>Status</th><th>error</th><th>의미</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>400</td><td>invalid_input</td><td>요청 바디 형식 오류 또는 items 누락</td></tr>
+          <tr><td>401</td><td>invalid_api_token</td><td>API 토큰이 잘못되었거나 만료됨</td></tr>
+          <tr><td>401</td><td>unauthorized</td><td>세션/토큰 인증 미제공</td></tr>
+          <tr><td>502</td><td>rag_unavailable</td><td>내부 RAG 서비스 연결 실패</td></tr>
+          <tr><td>504</td><td>-</td><td>게이트웨이 타임아웃(네트워크/처리 지연)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card panel doc-section">
+      <h2>8. 운영 팁</h2>
+      <ul class="doc-list">
+        <li>기본적으로 rebuild_db는 false를 사용하세요.</li>
+        <li>문항은 여러 개를 묶어 보내되, 50개를 넘기지 마세요.</li>
+        <li>클라이언트에서 1000초 이상 max-time을 설정해두면 장문 응답에 유리합니다.</li>
+        <li>토큰은 서버에 하드코딩하지 말고 환경변수/시크릿 스토어에 보관하세요.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+</body>
+</html>

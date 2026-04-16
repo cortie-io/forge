@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — 회원가입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416c">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+      <span class="nav-brand-name">Passio</span>
+    </a>
+    <div class="nav-r">
+      <button class="btn btn-out btn-sm" onclick="location.href='/pages/login.html'">로그인</button>
+    </div>
+  </header>
+
+  <main class="auth-wrap">
+    <section class="card auth-card">
+      <h1>회원가입</h1>
+      <p class="muted" style="margin-bottom:14px;">학습 계정을 생성하고 바로 시작하세요.</p>
+      <form id="signup-form">
+        <div class="grid-two">
+          <div class="field">
+            <label for="username">아이디</label>
+            <input id="username" type="text" required>
+          </div>
+          <div class="field">
+            <label for="name">이름</label>
+            <input id="name" type="text" required>
+          </div>
+        </div>
+        <div class="grid-two">
+          <div class="field">
+            <label for="student-number">학번</label>
+            <input id="student-number" type="text" inputmode="numeric" required>
+          </div>
+          <div class="field">
+            <label for="email">이메일</label>
+            <input id="email" type="email" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">비밀번호</label>
+          <input id="password" type="password" required>
+        </div>
+        <button class="btn primary block" id="signup-btn" type="submit">가입하기</button>
+        <div class="msg" id="signup-msg"></div>
+      </form>
+      <div class="linkline">
+        <span>이미 계정이 있나요? <a href="/pages/login.html">로그인</a></span>
+        <a href="/pages/index.html">홈으로</a>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/assets/js/signup-page.js"></script>
+</body>
+</html>

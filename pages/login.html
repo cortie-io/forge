@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — 로그인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416c">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+      <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+      <span class="nav-brand-name">Passio</span>
+    </a>
+    <div class="nav-r">
+      <button class="btn btn-out btn-sm" onclick="location.href='/pages/index.html'">홈</button>
+    </div>
+  </header>
+
+  <main class="auth-wrap">
+    <section class="card auth-card">
+      <h1>로그인</h1>
+      <p class="muted" style="margin-bottom:14px;">계정으로 로그인하고 바로 학습하세요.</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="username">아이디</label>
+          <input id="username" type="text" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">비밀번호</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn primary block" id="login-btn" type="submit">로그인</button>
+        <div class="msg" id="login-msg"></div>
+      </form>
+      <div class="linkline">
+        <span>계정이 없나요? <a href="/pages/signup.html">회원가입</a></span>
+        <a href="/pages/index.html">홈으로</a>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/assets/js/login-page.js?v=20260416f"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<title>Passio — 문제 풀이</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260416c">
+</head>
+<body>
+<div class="page">
+  <header class="nav">
+    <div class="nav-left">
+      <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
+        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+        <span class="nav-brand-name">Passio</span>
+      </a>
+      <nav class="nav-menu" aria-label="페이지 이동">
+        <a class="nav-link active" href="/pages/dashboard.html">대시보드</a>
+        <a class="nav-link" href="/pages/ai-explain.html">AI 해설</a>
+        <a class="nav-link" href="/pages/question-bank.html">문제은행</a>
+        <a class="nav-link" href="/pages/history.html">히스토리</a>
+        <a class="nav-link" href="/pages/api-token.html">API 토큰</a>
+      </nav>
+    </div>
+    <div class="nav-r">
+      <span class="nav-user" id="ava-dash">학습자</span>
+      <button class="btn btn-out btn-sm" id="btn-logout">로그아웃</button>
+    </div>
+  </header>
+  <main class="container section">
+    <section class="dash-shell">
+      <div class="dash-headline">
+        <span class="dash-pill">Subject Dashboard</span>
+        <h2><span id="user-name">학습자</span>님, 과목을 선택해 시작하세요</h2>
+        <p class="sub">과목별 카드 그리드 기반으로 구성되어 이후 과목이 늘어나도 같은 레이아웃으로 확장됩니다.</p>
+        <div class="dash-mini-stats">
+          <div class="mini-stat">
+            <strong>맞춤 출제</strong>
+            <span>선택 과목 기준</span>
+          </div>
+          <div class="mini-stat">
+            <strong>유연한 구성</strong>
+            <span>과목별 정책 반영</span>
+          </div>
+          <div class="mini-stat">
+            <strong>즉시 피드백</strong>
+            <span>오답 중심 복습</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="subject-grid">
+        <article class="subject-card active">
+          <div class="subject-status">OPEN</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">🌐</div>
+            <div>
+              <strong class="subject-title">네트워크 관리사 2급</strong>
+              <div class="muted">1과목 17 · 2과목 10 · 3과목 18 · 4과목 5</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">TCP/IP</span>
+            <span class="dash-chip">네트워크 일반</span>
+            <span class="dash-chip">NOS</span>
+            <span class="dash-chip">운용기기</span>
+          </div>
+          <button class="btn btn-navy subject-btn" id="start-btn">이 과목 시작</button>
+        </article>
+
+        <article class="subject-card">
+          <div class="subject-status soon">SOON</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">🖥️</div>
+            <div>
+              <strong class="subject-title">컴퓨터활용능력</strong>
+              <div class="muted">필기 + 실기 통합 학습</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">스프레드시트</span>
+            <span class="dash-chip">데이터 정리</span>
+          </div>
+          <button class="btn btn-out subject-btn" type="button" disabled>준비중</button>
+        </article>
+
+        <article class="subject-card">
+          <div class="subject-status soon">SOON</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">🛡️</div>
+            <div>
+              <strong class="subject-title">정보보안기사</strong>
+              <div class="muted">개념 + 시나리오 기반 문제</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">암호학</span>
+            <span class="dash-chip">취약점 대응</span>
+          </div>
+          <button class="btn btn-out subject-btn" type="button" disabled>준비중</button>
+        </article>
+
+        <article class="subject-card">
+          <div class="subject-status soon">SOON</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">📊</div>
+            <div>
+              <strong class="subject-title">SQLD</strong>
+              <div class="muted">모델링 · SQL 최적화</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">정규화</span>
+            <span class="dash-chip">조인/서브쿼리</span>
+          </div>
+          <button class="btn btn-out subject-btn" type="button" disabled>준비중</button>
+        </article>
+
+        <article class="subject-card">
+          <div class="subject-status soon">SOON</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">⚙️</div>
+            <div>
+              <strong class="subject-title">리눅스마스터</strong>
+              <div class="muted">명령어 · 운영 · 네트워크</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">쉘</span>
+            <span class="dash-chip">프로세스</span>
+          </div>
+          <button class="btn btn-out subject-btn" type="button" disabled>준비중</button>
+        </article>
+
+        <article class="subject-card">
+          <div class="subject-status soon">SOON</div>
+          <div class="subject-head">
+            <div class="subject-mark" aria-hidden="true">☁️</div>
+            <div>
+              <strong class="subject-title">클라우드 기초</strong>
+              <div class="muted">서비스 구조와 운영 이해</div>
+            </div>
+          </div>
+          <div class="subject-tags">
+            <span class="dash-chip">아키텍처</span>
+            <span class="dash-chip">운영/비용</span>
+          </div>
+          <button class="btn btn-out subject-btn" type="button" disabled>준비중</button>
+        </article>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="/assets/js/quiz-dashboard-page.js?v=20260416c"></script>
+</body>
+</html>

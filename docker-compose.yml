@@ -1,0 +1,55 @@
+services:
+  app:
+    image: node:20-alpine
+    container_name: sikdorak-app
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm install && PORT=3100 npm start"
+    expose:
+      - "3100"
+    volumes:
+      - ./:/app
+
+  py-api:
+    image: python:3.11-slim
+    container_name: sikdorak-py-api
+    restart: unless-stopped
+    working_dir: /app/python_api
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && sh run.sh"
+    expose:
+      - "8000"
+    environment:
+      - PY_API_PORT=8000
+      - SERVICE_NAME=sikdorak-python-api
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://100.79.44.109:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-gemma:latest}
+      - OLLAMA_EMBED_MODEL=${OLLAMA_EMBED_MODEL:-bge-m3:latest}
+      - CHROMA_DB_DIR=/data/chroma_db
+      - PDF_PATH=/data/네트워크관리사-압축됨.pdf
+      - MD_PATH=/data/theory_only.md
+    volumes:
+      - ./:/app
+      - ./RAG:/data:ro
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: sikdorak-web
+    restart: unless-stopped
+    depends_on:
+      - app
+      - py-api
+    ports:
+      - "8080:80"
+    volumes:
+      - ./pages:/usr/share/nginx/html/pages:ro
+      - ./assets:/usr/share/nginx/html/assets:ro
+      - ./favicon.svg:/usr/share/nginx/html/favicon.svg:ro
+      - ./og.png:/usr/share/nginx/html/og.png:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/security-headers.conf:/etc/nginx/security-headers.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
