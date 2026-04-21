@@ -14,6 +14,7 @@ import json
 import os
 import asyncio
 import threading
+from contextlib import asynccontextmanager
 import time
 import urllib.request
 import urllib.error
@@ -30,10 +31,12 @@ from starlette.responses import Response
 from .rag.engine import solve_items
 from .rag.models import ExamItem, SolveRequest, SolveResponse
 from .schemas import HealthResponse
+from .settings import settings
 
-# RAG는 Chroma(SQLite)+Ollama 등 무거운 동기 작업이라, 스레드풀에서 동시에 여러 요청이
-# 들어오면 같은 chroma.sqlite3에 동시 쓰기가 겹쳐 잠금/오류·연결 끊김이 날 수 있음 → 직렬화.
-_rag_solve_lock = threading.Lock()
+# solve 경로는 Chroma를 주로 읽기만 하지만, SQLite 백엔드에서 동시 접근이 겹치면
+# busy/timeout이 날 수 있어 완전 무제한 병렬은 피하고 제한적 병렬만 허용합니다.
+# (과거 전역 Lock은 모든 요청을 1개로 직렬화 → 대기열 지연 폭증)
+_rag_solve_semaphore = threading.BoundedSemaphore(settings.RAG_SOLVE_MAX_PARALLEL)
 
 # ─────────────────────────────────────────────
 # 로깅 설정
@@ -94,7 +97,36 @@ async def log_api_request(
         print(f"[API Log Error] {str(e)}")
         # 로깅 실패가 API 응답을 방해하지 않도록 에러를 무시
 
-app = FastAPI(title="sikdorak-python-api", version="1.0.0")
+
+async def _rag_startup_warmup() -> None:
+    """첫 실제 사용자 요청 전에 Ollama에 짧은 생성을 한 번 보내 콜드 스타트 완화."""
+    await asyncio.sleep(1.0)
+    try:
+        from langchain_ollama import ChatOllama
+
+        def _ping() -> None:
+            chat = ChatOllama(
+                model=settings.OLLAMA_MODEL,
+                base_url=settings.OLLAMA_HOST,
+                temperature=0,
+                num_predict=24,
+            )
+            chat.invoke(".", think=False)
+
+        loop = asyncio.get_event_loop()
+        await asyncio.wait_for(loop.run_in_executor(None, _ping), timeout=120.0)
+        print("[RAG warmup] ollama short invoke ok")
+    except Exception as exc:
+        print("[RAG warmup] skipped:", exc)
+
+
+@asynccontextmanager
+async def _app_lifespan(app):
+    asyncio.create_task(_rag_startup_warmup())
+    yield
+
+
+app = FastAPI(title="sikdorak-python-api", version="1.0.0", lifespan=_app_lifespan)
 
 # CORS 설정
 app.add_middleware(
@@ -201,7 +233,7 @@ def rag_solve(payload: SolveRequest) -> SolveResponse:
     }
     """
     try:
-        with _rag_solve_lock:
+        with _rag_solve_semaphore:
             results = solve_items(payload.items, force_rebuild=payload.rebuild_db)
         return SolveResponse(ok=True, total=len(results), results=results)
     except Exception as exc:
@@ -215,7 +247,11 @@ async def _run_rag_job_bg(job_id: int, exam_item: ExamItem, rebuild_db: bool) ->
         try:
             # solve_items는 무거운 동기 함수 → 스레드풀에서 실행해야 이벤트 루프를 블록하지 않음
             loop = asyncio.get_event_loop()
-            results = await loop.run_in_executor(None, lambda: solve_items([exam_item], force_rebuild=rebuild_db))
+            def _solve_one_slot() -> list:
+                with _rag_solve_semaphore:
+                    return solve_items([exam_item], force_rebuild=rebuild_db)
+
+            results = await loop.run_in_executor(None, _solve_one_slot)
             result_payload = {
                 "ok": True,
                 "total": len(results),
