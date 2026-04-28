@@ -8,7 +8,7 @@ def _to_bool(value: str | None, default: bool = False) -> bool:
 
 
 class Settings:
-    SERVICE_NAME = os.getenv("SERVICE_NAME", "sikdorak-python-api")
+    SERVICE_NAME = os.getenv("SERVICE_NAME", "passio-python-api")
     DEBUG = _to_bool(os.getenv("FASTAPI_DEBUG"), default=False)
 
     # RAG
@@ -33,14 +33,12 @@ class Settings:
     # 동시 /api/v1/rag/solve 처리 상한. RAG_ALWAYS_FAST일 때 기본 4.
     if "RAG_SOLVE_MAX_PARALLEL" in os.environ:
         RAG_SOLVE_MAX_PARALLEL = max(1, int(os.environ["RAG_SOLVE_MAX_PARALLEL"]))
-    elif RAG_ALWAYS_FAST:
-        RAG_SOLVE_MAX_PARALLEL = 4
     else:
-        RAG_SOLVE_MAX_PARALLEL = 3
+        RAG_SOLVE_MAX_PARALLEL = 1
     # 표→서술 사전 변환 전용 생성 토큰 상한 (짧게 두면 속도↑, 품질↓ 가능)
     RAG_TABLE_FIX_NUM_PREDICT = int(os.getenv("RAG_TABLE_FIX_NUM_PREDICT", "2048"))
     RAG_CONTEXT_CHAR_LIMIT = int(os.getenv("RAG_CONTEXT_CHAR_LIMIT", "12000"))
-    CHROMA_DB_DIR = os.getenv("CHROMA_DB_DIR", "/home/ubuntu/sikdorak/python_api/chroma_db")
+    CHROMA_DB_DIR = os.getenv("CHROMA_DB_DIR", "/home/ubuntu/passio/python_api/chroma_db")
     PDF_PATH = os.getenv("PDF_PATH", "/data/네트워크관리사.pdf")
     MD_PATH = os.getenv("MD_PATH", "/data/theory_only.md")
     CERT_NAME = os.getenv("CERT_NAME", "네트워크 관리사 2급")

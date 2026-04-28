@@ -198,8 +198,12 @@ function makeRagJobCard(job, listSlot) {
 function replaceQuizHeadInDom(attempts) {
   const list = $("quiz-history-list");
   const empty = $("quiz-history-empty");
+  const countEl = $("history-quiz-count");
   if (!list || !empty) {
     return;
+  }
+  if (countEl) {
+    countEl.textContent = String(Array.isArray(attempts) ? attempts.length : 0);
   }
   list.querySelectorAll('[data-list-slot="head"]').forEach(n => n.remove());
   const hasTail = Boolean(list.querySelector('[data-list-slot="tail"]'));
@@ -230,8 +234,12 @@ function replaceQuizHeadInDom(attempts) {
 function replaceRagHeadInDom(jobs) {
   const list = $("rag-history-list");
   const empty = $("rag-history-empty");
+  const countEl = $("history-rag-count");
   if (!list || !empty) {
     return;
+  }
+  if (countEl) {
+    countEl.textContent = String(Array.isArray(jobs) ? jobs.length : 0);
   }
   list.querySelectorAll('[data-list-slot="head"]').forEach(n => n.remove());
   const hasTail = Boolean(list.querySelector('[data-list-slot="tail"]'));

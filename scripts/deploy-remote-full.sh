@@ -2,7 +2,7 @@
 # 원격 프로젝트 루트에 코드 대부분을 rsync (node_modules 등 제외) 후,
 # 정적(pages, assets, nginx)도 맞추고 선택적으로 nginx reload / Node 재시작.
 #
-#   export DEPLOY_HOST='ubuntu@sikdorak.org'
+#   export DEPLOY_HOST='ubuntu@passio.cortie.io'
 #   export DEPLOY_PATH='/home/ubuntu/passio'   # 원격 저장소 루트 (예시 — 실제 경로로 바꾸세요)
 #   optional: export DEPLOY_KEY="$HOME/.ssh/id_ed25519"
 #   optional: export REMOTE_NGINX_RELOAD='sudo nginx -s reload'

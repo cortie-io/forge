@@ -54,6 +54,10 @@ async function submitSolve() {
     return;
   }
 
+
+  // 체감 속도 측정: 버튼 클릭 시 시작 시각 기록
+  try { localStorage.setItem("explainStart", Date.now().toString()); } catch {}
+
   const btn = $("btn-solve");
   btn.disabled = true;
   showMessage("", "AI 해설 작업을 생성하는 중...");

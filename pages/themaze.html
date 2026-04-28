@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Themaze Timetable | Zero to Scale</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+  <style>
+    :root { --bg:#f8f9f5; --fg:#272829; --muted:#5f6876; --line:#d9ddd4; --card:#ffffff; --accent:#3d8e72; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background:var(--bg); color:var(--fg); }
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .title { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
+    .actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .btn { border:1px solid var(--line); background:#fff; color:#111827; border-radius:999px; height:36px; padding:0 14px; font-size:13px; cursor:pointer; }
+    .btn.primary { background:#272829; color:#fff; border-color:#272829; }
+    .meta { color:var(--muted); font-size:13px; margin-bottom:12px; }
+    .alert { background:#fff4e5; border:1px solid #ffd9a8; color:#8a4b00; border-radius:12px; padding:12px 14px; margin-bottom:12px; }
+    .table-shell { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:auto; max-height: calc(100vh - 210px); }
+    table { border-collapse: collapse; min-width: 980px; width: 100%; }
+    th, td { border:1px solid #e5e7eb; font-size:12px; padding:6px 8px; vertical-align:top; white-space:pre-wrap; }
+    th { background:#f3f4f6; font-weight:600; }
+    td.empty { background:#fafafa; color:#c5c9d1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <div class="title">Themaze Timetable</div>
+      <div class="actions">
+        <button class="btn" id="btn-source">Open Source</button>
+        <button class="btn primary" id="btn-refresh">Refresh</button>
+      </div>
+    </div>
+    <div class="meta" id="meta">Loading...</div>
+    <div id="alert-slot"></div>
+    <div class="table-shell">
+      <table id="table"><tbody></tbody></table>
+    </div>
+  </div>
+  <script src="/assets/js/themaze-page.js?v=20260426-2"></script>
+</body>
+</html>

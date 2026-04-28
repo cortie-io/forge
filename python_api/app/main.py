@@ -24,14 +24,15 @@ from datetime import datetime
 from typing import Any, Callable, Optional
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from app.celery_worker import run_rag_job
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 
-from .rag.engine import solve_items
-from .rag.models import ExamItem, SolveRequest, SolveResponse
-from .schemas import HealthResponse
-from .settings import settings
+from app.rag.engine import solve_items
+from app.rag.models import ExamItem, SolveRequest, SolveResponse
+from app.schemas import HealthResponse
+from app.settings import settings
 
 # solve 경로는 Chroma를 주로 읽기만 하지만, SQLite 백엔드에서 동시 접근이 겹치면
 # busy/timeout이 날 수 있어 완전 무제한 병렬은 피하고 제한적 병렬만 허용합니다.
@@ -391,8 +392,8 @@ async def create_rag_job(request: Request, background_tasks: BackgroundTasks):
             await conn.close()
 
         # 2) 해설 생성은 백그라운드로 위임 — 클라이언트 종료와 무관하게 완료됨
-        background_tasks.add_task(_run_rag_job_bg, job_id, exam_item, rebuild_db)
-
+        # Celery로 비동기 job 위임
+        run_rag_job.delay(job_id, exam_item.dict(), rebuild_db)
         return {"ok": True, "jobId": job_id}
     except HTTPException:
         raise

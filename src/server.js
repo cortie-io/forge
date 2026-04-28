@@ -62,11 +62,25 @@ const app = express();
 const PORT = Number(process.env.PORT || 3100);
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const WEB_ROOT = path.resolve(__dirname, "..");
+const AUTH_SERVER_INTROSPECT_URL =
+  process.env.AUTH_SERVER_INTROSPECT_URL || "https://auth.cortie.io/api/auth/introspect";
+const AUTH_SERVER_LOGIN_URL =
+  process.env.AUTH_SERVER_LOGIN_URL || "https://auth.cortie.io/login";
+const AUTH_SERVER_SIGNUP_URL =
+  process.env.AUTH_SERVER_SIGNUP_URL || "https://auth.cortie.io/signup";
+const AUTH_COOKIE_NAME = process.env.AUTH_COOKIE_NAME || "cortie_auth_token";
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || "dev_access_secret_change_me";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "dev_refresh_secret_change_me";
 const ACCESS_TOKEN_EXPIRES = process.env.ACCESS_TOKEN_EXPIRES || "15m";
 const REFRESH_TOKEN_EXPIRES_DAYS = Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS || 14);
 const IS_PROD = process.env.NODE_ENV === "production";
+const THEMAZE_SOURCE_URL = process.env.THEMAZE_SOURCE_URL || "http://themazenw.co.kr/adm/";
+const THEMAZE_SOURCE_COOKIE = process.env.THEMAZE_SOURCE_COOKIE || "";
+const THEMAZE_LOGIN_URL = process.env.THEMAZE_LOGIN_URL || "http://themazenw.co.kr/bbs/login.php?url=http%3A%2F%2Fthemazenw.co.kr%2Fadm";
+const THEMAZE_LOGIN_CHECK_URL =
+  process.env.THEMAZE_LOGIN_CHECK_URL || "http://themazenw.co.kr/bbs/login_check.php";
+const THEMAZE_ADMIN_ID = process.env.THEMAZE_ADMIN_ID || "admin";
+const THEMAZE_ADMIN_PASSWORD = process.env.THEMAZE_ADMIN_PASSWORD || "angel1004";
 
 app.set("trust proxy", 1);
 
@@ -225,7 +239,8 @@ const pageAliases = {
   "/dashboard.html": "/pages/dashboard.html",
   "/history.html": "/pages/history.html",
   "/admin": "/pages/admin.html",
-  "/admin.html": "/pages/admin.html"
+  "/admin.html": "/pages/admin.html",
+  "/themaze.html": "/pages/themaze.html"
 };
 
 Object.entries(pageAliases).forEach(([routePath, targetPath]) => {
@@ -233,6 +248,231 @@ Object.entries(pageAliases).forEach(([routePath, targetPath]) => {
     res.redirect(targetPath);
   });
 });
+
+function decodeHtmlEntities(input) {
+  return String(input || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function plainTextFromCellHtml(cellHtml) {
+  return decodeHtmlEntities(String(cellHtml || "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, ""))
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
+function parseTableToMatrix(tableHtml) {
+  const trMatches = tableHtml.match(/<tr[\s\S]*?<\/tr>/gi) || [];
+  const matrix = [];
+  const occupied = {};
+  let maxCols = 0;
+
+  const occupy = (r, c, rs, cs, value) => {
+    for (let rr = r; rr < r + rs; rr += 1) {
+      for (let cc = c; cc < c + cs; cc += 1) {
+        occupied[`${rr}:${cc}`] = value;
+      }
+    }
+  };
+
+  trMatches.forEach((trHtml, rowIdx) => {
+    const cellMatches = trHtml.match(/<(td|th)\b[\s\S]*?<\/\1>/gi) || [];
+    let colIdx = 0;
+    if (!matrix[rowIdx]) matrix[rowIdx] = [];
+
+    cellMatches.forEach((cellHtml) => {
+      while (occupied[`${rowIdx}:${colIdx}`]) {
+        colIdx += 1;
+      }
+      const rowspanMatch = cellHtml.match(/\browspan\s*=\s*["']?(\d+)["']?/i);
+      const colspanMatch = cellHtml.match(/\bcolspan\s*=\s*["']?(\d+)["']?/i);
+      const rowspan = Math.max(1, Number(rowspanMatch?.[1] || 1));
+      const colspan = Math.max(1, Number(colspanMatch?.[1] || 1));
+      const inner = cellHtml.replace(/^<[^>]+>/, "").replace(/<\/(td|th)>$/i, "");
+      const text = plainTextFromCellHtml(inner);
+
+      occupy(rowIdx, colIdx, rowspan, colspan, text);
+      matrix[rowIdx][colIdx] = text;
+      colIdx += colspan;
+      maxCols = Math.max(maxCols, colIdx);
+    });
+  });
+
+  const normalized = [];
+  for (let r = 0; r < matrix.length; r += 1) {
+    const row = [];
+    for (let c = 0; c < maxCols; c += 1) {
+      row.push(occupied[`${r}:${c}`] || "");
+    }
+    normalized.push(row);
+  }
+  return normalized;
+}
+
+function extractBestTable(html) {
+  const tableMatches = html.match(/<table\b[\s\S]*?<\/table>/gi) || [];
+  if (!tableMatches.length) return null;
+  let best = null;
+  let bestScore = -1;
+  tableMatches.forEach((tableHtml) => {
+    const rows = (tableHtml.match(/<tr\b/gi) || []).length;
+    const cells = (tableHtml.match(/<(td|th)\b/gi) || []).length;
+    const score = rows * 10 + cells;
+    if (score > bestScore) {
+      best = tableHtml;
+      bestScore = score;
+    }
+  });
+  return best;
+}
+
+function updateCookieJarFromResponse(cookieJar, response) {
+  const getter = response.headers.getSetCookie;
+  const rawCookies =
+    typeof getter === "function" ? getter.call(response.headers) : response.headers.get("set-cookie") ? [response.headers.get("set-cookie")] : [];
+  rawCookies.forEach((entry) => {
+    const pair = String(entry || "").split(";")[0].trim();
+    if (!pair || !pair.includes("=")) return;
+    const [name] = pair.split("=");
+    if (!name) return;
+    cookieJar[name.trim()] = pair;
+  });
+}
+
+function buildCookieHeader(cookieJar) {
+  return Object.values(cookieJar).join("; ");
+}
+
+async function fetchThemazeHtmlWithLogin(sourceUrl) {
+  const cookieJar = {};
+
+  if (THEMAZE_SOURCE_COOKIE) {
+    THEMAZE_SOURCE_COOKIE.split(";").forEach((chunk) => {
+      const pair = chunk.trim();
+      if (!pair || !pair.includes("=")) return;
+      const [name] = pair.split("=");
+      cookieJar[name.trim()] = pair;
+    });
+  }
+
+  const commonHeaders = {
+    "user-agent": "Mozilla/5.0 (compatible; CortieThemazeBot/1.0)"
+  };
+
+  const firstRes = await fetch(sourceUrl, {
+    method: "GET",
+    headers: {
+      ...commonHeaders,
+      ...(buildCookieHeader(cookieJar) ? { cookie: buildCookieHeader(cookieJar) } : {})
+    },
+    redirect: "follow",
+    signal: AbortSignal.timeout(12000)
+  });
+  updateCookieJarFromResponse(cookieJar, firstRes);
+  let html = await firstRes.text();
+
+  const authRequired =
+    html.includes("로그인 하십시오") ||
+    html.includes("오류안내 페이지") ||
+    /\/bbs\/login\.php/i.test(html);
+  if (!authRequired) {
+    return { html, cookieJar, loggedIn: Boolean(THEMAZE_SOURCE_COOKIE) };
+  }
+
+  const loginPage = await fetch(THEMAZE_LOGIN_URL, {
+    method: "GET",
+    headers: {
+      ...commonHeaders,
+      ...(buildCookieHeader(cookieJar) ? { cookie: buildCookieHeader(cookieJar) } : {})
+    },
+    redirect: "follow",
+    signal: AbortSignal.timeout(12000)
+  });
+  updateCookieJarFromResponse(cookieJar, loginPage);
+  const loginHtml = await loginPage.text();
+  const urlValue =
+    loginHtml.match(/name=["']url["']\s+value=['"]([^'"]+)['"]/i)?.[1] || encodeURIComponent("http://themazenw.co.kr/adm");
+
+  const form = new URLSearchParams();
+  form.set("mb_id", THEMAZE_ADMIN_ID);
+  form.set("mb_password", THEMAZE_ADMIN_PASSWORD);
+  form.set("url", urlValue);
+
+  const loginCheck = await fetch(THEMAZE_LOGIN_CHECK_URL, {
+    method: "POST",
+    headers: {
+      ...commonHeaders,
+      "content-type": "application/x-www-form-urlencoded",
+      ...(buildCookieHeader(cookieJar) ? { cookie: buildCookieHeader(cookieJar) } : {})
+    },
+    body: form.toString(),
+    redirect: "follow",
+    signal: AbortSignal.timeout(12000)
+  });
+  updateCookieJarFromResponse(cookieJar, loginCheck);
+  await loginCheck.text();
+
+  const secondRes = await fetch(sourceUrl, {
+    method: "GET",
+    headers: {
+      ...commonHeaders,
+      ...(buildCookieHeader(cookieJar) ? { cookie: buildCookieHeader(cookieJar) } : {})
+    },
+    redirect: "follow",
+    signal: AbortSignal.timeout(12000)
+  });
+  updateCookieJarFromResponse(cookieJar, secondRes);
+  html = await secondRes.text();
+  return { html, cookieJar, loggedIn: true };
+}
+
+app.get("/api/themaze/timetable", asyncHandler(async (req, res) => {
+  const sourceUrl = String(req.query.url || THEMAZE_SOURCE_URL).trim();
+  const { html, loggedIn } = await fetchThemazeHtmlWithLogin(sourceUrl);
+  const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || "").trim();
+  const authRequired =
+    html.includes("로그인 하십시오") ||
+    html.includes("오류안내 페이지") ||
+    /\/bbs\/login\.php/i.test(html);
+
+  if (authRequired) {
+    return res.status(401).json({
+      ok: false,
+      authRequired: true,
+      sourceUrl,
+      message: "Source page requires login. Check THEMAZE admin credentials/cookie.",
+      title
+    });
+  }
+
+  const tableHtml = extractBestTable(html);
+  if (!tableHtml) {
+    return res.status(422).json({
+      ok: false,
+      sourceUrl,
+      message: "No table found in source HTML.",
+      title
+    });
+  }
+
+  const rows = parseTableToMatrix(tableHtml);
+  return res.json({
+    ok: true,
+    sourceUrl,
+    loggedIn,
+    title,
+    fetchedAt: new Date().toISOString(),
+    rowCount: rows.length,
+    colCount: rows[0]?.length || 0,
+    rows
+  });
+}));
 
 function normalizeUsername(username) {
   return String(username).trim().toLowerCase();
@@ -296,6 +536,11 @@ function clearAuthCookies(res) {
 }
 
 function getAccessTokenFromRequest(req) {
+  const ssoCookie = req.cookies?.[AUTH_COOKIE_NAME];
+  if (ssoCookie) {
+    return ssoCookie;
+  }
+
   const fromCookie = req.cookies?.access_token;
   if (fromCookie) {
     return fromCookie;
@@ -308,6 +553,78 @@ function getAccessTokenFromRequest(req) {
   }
 
   return null;
+}
+
+function normalizeAuthUsername(rawUsername, rawEmail) {
+  const source = String(rawUsername || "").trim() || String(rawEmail || "").split("@")[0] || "user";
+  const normalized = source.toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 30);
+  if (!normalized) return `user_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
+  if (normalized.length < 3) return `${normalized}_u`;
+  return normalized;
+}
+
+function makeStudentNumber(payloadSub) {
+  const base = String(payloadSub || "").replace(/[^a-zA-Z0-9]/g, "").slice(0, 20);
+  if (!base) return `auth${Date.now().toString().slice(-10)}`;
+  const candidate = `auth${base}`;
+  return candidate.length >= 4 ? candidate.slice(0, 30) : `auth_${base}`.slice(0, 30);
+}
+
+async function introspectAuthToken(token) {
+  try {
+    const resp = await fetch(AUTH_SERVER_INTROSPECT_URL, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!resp.ok) {
+      return null;
+    }
+    const body = await resp.json();
+    if (!body?.active || !body?.payload) {
+      return null;
+    }
+    return body.payload;
+  } catch (_err) {
+    return null;
+  }
+}
+
+async function resolveOrCreateLocalUserFromAuthPayload(payload) {
+  const authEmail = String(payload?.email || "").trim().toLowerCase();
+  const username = normalizeAuthUsername(payload?.username, authEmail);
+  const name = String(payload?.name || username).trim() || username;
+
+  let localUser = null;
+  if (authEmail) {
+    localUser = await findUserByEmail(authEmail);
+  }
+  if (!localUser && username) {
+    localUser = await findUserByUsername(username);
+  }
+  if (localUser) {
+    return localUser;
+  }
+
+  const fallbackEmail = authEmail || `${username}@cortie.io`;
+  const fallbackStudentNumber = makeStudentNumber(payload?.sub);
+  const randomPassword = crypto.randomUUID() + crypto.randomUUID();
+
+  try {
+    const created = await createUser({
+      username,
+      email: fallbackEmail,
+      name,
+      password: randomPassword,
+      studentNumber: fallbackStudentNumber
+    });
+    return created;
+  } catch (_err) {
+    // Race-safe fallback: user may have been created between lookups.
+    return (await findUserByEmail(fallbackEmail)) || (await findUserByUsername(username));
+  }
 }
 
 function getApiTokenFromRequest(req) {
@@ -394,6 +711,23 @@ const requireAuth = asyncHandler(async (req, res, next) => {
     });
   }
 
+  // Prefer global auth-server token so every cortie service shares one login.
+  const authPayload = await introspectAuthToken(accessToken);
+  if (authPayload) {
+    const localUser = await resolveOrCreateLocalUserFromAuthPayload(authPayload);
+    if (!localUser) {
+      return res.status(401).json({
+        error: "user_not_found",
+        message: "사용자를 찾을 수 없습니다."
+      });
+    }
+    req.user = localUser;
+    req.authType = "global_session";
+    req.authPayload = authPayload;
+    return next();
+  }
+
+  // Backward-compat: accept legacy local JWT cookies/tokens.
   let payload;
   try {
     payload = jwt.verify(accessToken, JWT_ACCESS_SECRET);
@@ -419,6 +753,17 @@ const requireAuth = asyncHandler(async (req, res, next) => {
 const requireAuthOrApiToken = asyncHandler(async (req, res, next) => {
   const accessToken = getAccessTokenFromRequest(req);
   if (accessToken) {
+    const authPayload = await introspectAuthToken(accessToken);
+    if (authPayload) {
+      const localUser = await resolveOrCreateLocalUserFromAuthPayload(authPayload);
+      if (localUser) {
+        req.user = localUser;
+        req.authType = "global_session";
+        req.authPayload = authPayload;
+        return next();
+      }
+    }
+
     try {
       const payload = jwt.verify(accessToken, JWT_ACCESS_SECRET);
       const user = await findUserById(payload.sub);
@@ -475,97 +820,17 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.post("/api/auth/register", asyncHandler(async (req, res) => {
-  const username = String(req.body?.username || "").trim().toLowerCase();
-  const email = String(req.body?.email || "").trim().toLowerCase();
-  const password = String(req.body?.password || "");
-  const name = String(req.body?.name || "").trim();
-  const studentNumber = String(req.body?.studentNumber || req.body?.student_number || "").trim();
-
-  if (!username || !email || !password || !name || !studentNumber) {
-    return res.status(400).json({
-      error: "invalid_input",
-      message: "username, name, studentNumber, email and password are required"
-    });
-  }
-
-  if (!/^[a-z0-9_]{3,30}$/.test(username)) {
-    return res.status(400).json({
-      error: "invalid_username",
-      message: "아이디는 영문 소문자, 숫자, 밑줄(_) 3~30자로 입력해주세요."
-    });
-  }
-
-  if (password.length < 8) {
-    return res.status(400).json({
-      error: "weak_password",
-      message: "비밀번호는 8자 이상이어야 합니다."
-    });
-  }
-
-  if (studentNumber.length < 4 || studentNumber.length > 30) {
-    return res.status(400).json({
-      error: "invalid_student_number",
-      message: "학번은 4자 이상 30자 이하로 입력해주세요."
-    });
-  }
-
-  const existing = await findUserByEmail(email);
-  if (existing) {
-    return res.status(409).json({
-      error: "email_exists",
-      message: "이미 가입된 이메일입니다."
-    });
-  }
-
-  const existingUsername = await findUserByUsername(normalizeUsername(username));
-  if (existingUsername) {
-    return res.status(409).json({
-      error: "username_exists",
-      message: "이미 사용 중인 아이디입니다."
-    });
-  }
-
-  const user = await createUser({ username, email, name, password, studentNumber });
-
-  return res.status(201).json({
-    message: "register_success",
-    user
+app.post("/api/auth/register", asyncHandler(async (_req, res) => {
+  return res.status(410).json({
+    error: "auth_migrated",
+    message: "회원가입은 https://auth.cortie.io/signup 에서만 가능합니다."
   });
 }));
 
-app.post("/api/auth/login", asyncHandler(async (req, res) => {
-  const username = String(req.body?.username || "").trim().toLowerCase();
-  const password = String(req.body?.password || "");
-
-  if (!username || !password) {
-    return res.status(400).json({
-      error: "invalid_input",
-      message: "username and password are required"
-    });
-  }
-
-  const user = await verifyUser(normalizeUsername(username), password);
-  if (!user) {
-    return res.status(401).json({
-      error: "invalid_credentials",
-      message: "아이디 또는 비밀번호가 올바르지 않습니다."
-    });
-  }
-
-  const accessToken = createAccessToken(user);
-  const { token: refreshToken, jti } = createRefreshToken(user);
-  await storeRefreshToken({
-    userId: user.id,
-    tokenJti: jti,
-    expiresAt: getRefreshExpiryDate()
-  });
-  setAuthCookies(res, accessToken, refreshToken);
-
-  return res.status(200).json({
-    message: "login_success",
-    user,
-    accessToken
+app.post("/api/auth/login", asyncHandler(async (_req, res) => {
+  return res.status(410).json({
+    error: "auth_migrated",
+    message: "로그인은 https://auth.cortie.io/login 에서만 가능합니다."
   });
 }));
 
@@ -651,11 +916,21 @@ app.post("/api/auth/logout", asyncHandler(async (req, res) => {
   }
 
   clearAuthCookies(res);
+  res.clearCookie(AUTH_COOKIE_NAME, { path: "/" });
+  res.clearCookie(AUTH_COOKIE_NAME, { path: "/", domain: ".cortie.io" });
   return res.status(200).json({ message: "logout_success" });
 }));
 
 app.get("/api/auth/me", requireAuth, (req, res) => {
   return res.status(200).json({ user: req.user });
+});
+
+app.get("/pages/login.html", (_req, res) => {
+  res.redirect(`${AUTH_SERVER_LOGIN_URL}?redirect_uri=${encodeURIComponent("https://passio.cortie.io/pages/dashboard.html")}`);
+});
+
+app.get("/pages/signup.html", (_req, res) => {
+  res.redirect(`${AUTH_SERVER_SIGNUP_URL}?redirect_uri=${encodeURIComponent("https://passio.cortie.io/pages/dashboard.html")}`);
 });
 
 app.post("/api/auth/api-token/reveal", requireAuth, asyncHandler(async (req, res) => {

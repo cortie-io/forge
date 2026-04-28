@@ -4,7 +4,7 @@
 #
 # Nginx 가 root /var/www/sikdorak; 이면 DEPLOY_PATH 도 동일하게 두는 것이 안전합니다.
 #
-#   export DEPLOY_HOST='ubuntu@sikdorak.org'
+#   export DEPLOY_HOST='ubuntu@passio.cortie.io'
 #   export DEPLOY_PATH='/var/www/sikdorak'   # 또는 원격 프로젝트 루트 — nginx root 와 일치시킬 것
 #   선택: export DEPLOY_KEY="$HOME/.ssh/id_ed25519"   # 없으면 ssh 기본 키·ssh-agent 사용
 #   bash scripts/sync-static-to-remote.sh
@@ -21,7 +21,7 @@ source "${ROOT_DIR}/scripts/_deploy_ssh.sh"
 if ! deploy_validate_env; then
   echo ""
   echo "예시:"
-  echo "  export DEPLOY_HOST='ubuntu@sikdorak.org'"
+  echo "  export DEPLOY_HOST='ubuntu@passio.cortie.io'"
   echo "  export DEPLOY_PATH='/home/ubuntu/sikdorak'"
   echo "  unset DEPLOY_KEY    # 또는: export DEPLOY_KEY=\"\$HOME/.ssh/id_ed25519\""
   echo "  npm run sync:web"
@@ -52,4 +52,4 @@ if [[ -n "${REMOTE_NGINX_RELOAD:-}" ]]; then
   deploy_ssh "$DEPLOY_HOST" "cd ${DEPLOY_PATH} && ${REMOTE_NGINX_RELOAD}"
 fi
 
-echo "[sync] 완료. 예: curl -sS https://sikdorak.org/api/health | head -c 400"
+echo "[sync] 완료. 예: curl -sS https://passio.cortie.io/api/health | head -c 400"

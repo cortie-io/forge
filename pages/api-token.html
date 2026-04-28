@@ -9,14 +9,101 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
-<link rel="stylesheet" href="/assets/css/passai.css?v=20260419responsive">
+<link rel="stylesheet" href="/assets/css/passai.css?v=20260425uifix">
+<style id="cortie-unify-override">
+body{background:radial-gradient(circle at 100% 0%,rgba(99,102,241,.06),transparent 34%),radial-gradient(circle at 0% 100%,rgba(37,51,80,.08),transparent 38%),#f8f9f5!important;color:#1a1a1a!important}
+.page{min-height:100vh;padding-top:68px!important}
+.nav{position:fixed!important;inset:0 0 auto 0!important;z-index:120!important;height:68px!important;padding:0 24px!important;border-bottom:1px solid rgba(39,40,41,.1)!important;background:rgba(248,249,245,.9)!important;backdrop-filter:blur(18px)!important}
+.nav-logo{gap:8px!important}.logo-mark{width:34px!important;height:34px!important;border-radius:9px!important;background:linear-gradient(145deg,#314467,#1e2a44 72%)!important}
+.logo-mark img{width:18px!important;height:18px!important;object-fit:contain!important}.nav-brand-name{font-family:Outfit,Apple SD Gothic Neo,Malgun Gothic,sans-serif!important;font-size:20px!important;font-weight:700!important;letter-spacing:-.02em!important}
+.nav-link{border-radius:9px!important;font-size:13px!important;padding:7px 12px!important}.nav-link.active{background:#eef2fb!important;color:#253350!important;border:1px solid #d6deef!important}
+.btn.btn-navy{background:#253350!important;border-color:#253350!important;color:#fff!important}.btn.btn-out{background:#fff!important;border:1px solid #d9ddd3!important;color:#35393f!important}
+.container.section{width:min(1120px,100% - 32px)!important;margin:0 auto!important;padding-top:26px!important;padding-bottom:44px!important}
+.card,.panel,.subject-card,.history-card,.result-shell,.quiz-card,.admin-table-wrap{border-radius:18px!important;border:1px solid #e0e3dc!important;background:linear-gradient(180deg,#fff,#fbfcfa)!important;box-shadow:0 12px 28px rgba(16,21,29,.08)!important}
+footer,.footer{border-top:1px solid #dde2d8!important;background:#fff!important}
+@media (max-width:900px){.page{padding-top:64px!important}.nav{height:64px!important;padding:0 14px!important}.container.section{width:min(1120px,100% - 20px)!important}}
+</style>
+
+
+<style id="cortie-main-unify-v4">
+:root{
+  --white:#F8F9F5;--off:#F0F1EC;--card:#ECECEA;--dark:#272829;--mid:#404144;--muted:#6E7278;
+  --hair:rgba(39,40,41,.08);--green:#3D8E72;--r-sm:10px;--r-md:18px;--r-lg:28px;--r-full:999px;
+}
+html,body{background:var(--white)!important;color:var(--dark)!important;font-family:Nunito,sans-serif!important;-webkit-font-smoothing:antialiased}
+#app,.page,main{background:transparent!important}
+
+/* keep layout consistent without crushing local structure */
+.container,.section,.screen,.panel{max-width:min(1200px,100% - 40px)!important;margin-left:auto!important;margin-right:auto!important}
+.section{padding-top:40px!important;padding-bottom:40px!important}
+
+/* visual tone only */
+.card,.panel,.subject-card,.history-card,.result-shell,.quiz-card,.admin-table-wrap,.api-doc-card,.cert-card,.step,.ri,.q-card,.score-card,.login-card{
+  background:#fff!important;border:1px solid var(--hair)!important;border-radius:18px!important;box-shadow:0 8px 22px rgba(23,30,43,.05)!important
+}
+
+/* typography refine (less aggressive) */
+h1,h2,h3,.sec-title{font-family:Nunito,sans-serif!important;letter-spacing:-.02em!important;color:var(--dark)!important}
+h1,.hero-left h1{font-weight:500!important}
+h2,.sec-title{font-weight:500!important}
+p,.sec-sub,.prev-exp-txt,.exp-txt{color:#535b68!important;line-height:1.72!important}
+.sec-tag,.api-doc-badge,.qz-tag,.res-sec-title{font-family:"DM Mono",monospace!important;letter-spacing:.1em!important;text-transform:uppercase!important}
+
+/* buttons */
+.btn,.btn-white,.btn-sec,.btn-next,.n-start{border-radius:999px!important;font-weight:600!important}
+.btn-navy,.n-start{background:var(--dark)!important;color:#fff!important;border-color:var(--dark)!important;box-shadow:none!important}
+.btn-navy:hover,.n-start:hover{background:var(--green)!important;transform:translateY(-1px)}
+.btn-out,.btn-sec{background:#fff!important;border:1px solid #d8ddd4!important;color:#374151!important}
+
+/* forms / tables */
+input,select,textarea{background:#fff!important;border:1px solid #d5dbcf!important;border-radius:12px!important;color:#1f2937!important}
+input:focus,select:focus,textarea:focus{outline:none!important;border-color:#97afa0!important;box-shadow:0 0 0 3px rgba(61,142,114,.12)!important}
+th{font-family:"DM Mono",monospace!important;font-size:11px!important;letter-spacing:.1em!important;color:#6b7280!important;text-transform:uppercase!important}
+
+/* nav/footer */
+.n-nav{background:#f8f9f5e8!important;border-bottom:1px solid var(--hair)!important;backdrop-filter:blur(16px)!important}
+footer,.footer,.rich-footer{border-top:1px solid var(--hair)!important;background:#fff!important}
+
+/* home page specific polish */
+.hero-wrap{padding-top:64px!important;padding-bottom:44px!important;gap:2.2rem!important}
+.hero-left h1{font-size:clamp(40px,5vw,62px)!important;line-height:1.1!important}
+.stats-inner{max-width:min(1200px,100% - 40px)!important}
+
+@media(max-width:900px){
+  .container,.section,.screen,.panel{max-width:min(1200px,100% - 22px)!important}
+  .section{padding-top:30px!important;padding-bottom:30px!important}
+  .hero-wrap{padding-top:40px!important}
+}
+</style>
+<style id="passio-global-nav-footer-v1">
+/* global fixes for all passio pages */
+.n-actions{display:flex;gap:10px;align-items:center}
+.n-user{color:#525a67;font-size:13px}
+.n-login{font-family:inherit;font-size:12px;font-weight:400;color:#616878;padding:0 8px;background:none;border:none;appearance:none;line-height:1.2;cursor:pointer;text-decoration:none}
+.n-login:hover{color:#2e333d}
+.n-start{font-size:12px;font-weight:500;color:#fff;background:#272829;padding:9px 16px;border-radius:999px;text-decoration:none;border:none}
+.n-start:hover{background:#3D8E72}
+
+.rich-footer{border-top:1px solid rgba(39,40,41,.08);background:#fff;padding:28px 24px 16px}
+.rich-footer-top{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1.35fr 1fr 1.2fr 1fr;gap:22px}
+.rich-footer-brand p{margin-top:10px;font-size:13px;color:#667085;line-height:1.65;max-width:360px}
+.rich-footer-col h4{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b7280;margin-bottom:8px}
+.rich-footer-col a{display:block;font-size:12px;color:#4b5563;margin-bottom:6px;text-decoration:none}
+.rich-footer-col a:hover{color:#111827}
+.rich-status{font-size:12px;color:#4b5563;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rich-status i{width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;box-shadow:0 0 0 3px rgba(134,239,172,.22)}
+.rich-footer-bottom{max-width:1400px;margin:14px auto 0;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.rich-copy{font-size:10px;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:980px){.rich-footer-top{grid-template-columns:1fr 1fr;gap:16px}}
+@media(max-width:620px){.rich-footer-top{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div class="page">
   <header class="nav">
     <div class="nav-left">
       <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
-        <span class="logo-mark" aria-hidden="true"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></span>
+        <span class="logo-mark" aria-hidden="true"><img src="/assets/shape_logo.svg" alt=""></span>
         <span class="nav-brand-name">Passio</span>
       </a>
       <nav class="nav-menu" aria-label="페이지 이동">
@@ -62,5 +149,47 @@
   </main>
 </div>
 <script src="/assets/js/api-token-page.js?v=20260416g"></script>
+<footer class="rich-footer">
+  <div class="rich-footer-top">
+    <div class="rich-footer-brand">
+      <a href="/" class="n-logo">
+        <img src="/assets/shape_logo.svg?v=20260425fix3" alt="cortie symbol" class="brand-mark">
+        <img src="/assets/text_logo.svg?v=20260425fix3" alt="cortie" class="brand-text">
+      </a>
+      <p>Cortie is an AI-first software brand focused on execution, web usability, and network-aware reliability.</p>
+    </div>
+
+    <div class="rich-footer-col">
+      <h4>Platform</h4>
+      <a href="https://cortie.io/about">About</a>
+      <a href="https://cortie.io/services">Services</a>
+      <a href="https://cortie.io/works">Works</a>
+      <a href="https://cortie.io/lab">Lab</a>
+    </div>
+
+    <div class="rich-footer-col">
+      <h4>Developers</h4>
+      <a href="https://cortie.io/docs">Docs</a>
+      <a href="https://cortie.io/api">API Center</a>
+      <a href="https://cortie.io/api/auth">Auth API</a>
+      <a href="https://cortie.io/developers">Developer Console</a>
+      <a href="https://cortie.io/changelog">Changelog</a>
+      <a href="https://cortie.io/contact">Integration Support</a>
+    </div>
+
+    <div class="rich-footer-col">
+      <h4>Operating Status</h4>
+      <div class="rich-status"><i></i>Auth Service · Operational</div>
+      <div class="rich-status"><i></i>Main Web · Operational</div>
+      <div class="rich-status"><i></i>Session Exchange · Healthy</div>
+    </div>
+  </div>
+
+  <div class="rich-footer-bottom">
+    <div class="rich-copy">© 2026 CORTIE · ALL RIGHTS RESERVED</div>
+    <div class="rich-copy">01 · CONTACT · CAREERS · PRIVACY · TERMS</div>
+  </div>
+</footer>
+<script src="/assets/js/passio-shell.js?v=20260425-shell2"></script>
 </body>
 </html>

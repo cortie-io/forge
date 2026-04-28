@@ -27,6 +27,8 @@ services:
       - CHROMA_DB_DIR=/data/chroma_db
       - PDF_PATH=/data/네트워크관리사.pdf
       - MD_PATH=/data/theory_only.md
+      - RAG_SOLVE_MAX_PARALLEL=4
+      - RAG_ALWAYS_FAST=1
     volumes:
       - ./:/app
       - ./RAG:/data:ro

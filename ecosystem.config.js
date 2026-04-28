@@ -27,7 +27,7 @@ module.exports = {
       name: "passio-node",
       cwd: root,
       script: "src/server.js",
-      instances: 1,
+      instances: 2,
       exec_mode: "fork",
       watch: true,
       watch_delay: 1000,

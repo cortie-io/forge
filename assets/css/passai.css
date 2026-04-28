@@ -868,6 +868,13 @@ html, body {
   stroke-linecap: round;
 }
 
+.logo-mark img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
 .nav-r { display: flex; align-items: center; gap: 8px; }
 
 .nav-user {
@@ -2942,5 +2949,131 @@ video {
   .result-footer--quiz-result .result-footer-secondary .btn {
     font-size: 13px;
     padding: 9px 12px;
+  }
+}
+
+/* === Cortie main-layout alignment (Passio accent) === */
+:root {
+  --passio-accent: #253350;
+  --passio-accent-soft: #eef2fb;
+  --passio-bg: #f8f9f5;
+}
+body {
+  background: radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.06), transparent 34%),
+    radial-gradient(circle at 0% 100%, rgba(37, 51, 80, 0.08), transparent 38%),
+    var(--passio-bg);
+  color: #1a1a1a;
+}
+.page {
+  min-height: 100vh;
+  padding-top: 68px;
+}
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 99;
+  height: 68px;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(39, 40, 41, 0.1);
+  backdrop-filter: blur(18px);
+  background: rgba(248, 249, 245, 0.9);
+}
+.nav-left { gap: 22px; }
+.nav-logo {
+  gap: 8px;
+}
+.logo-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #314467, #1e2a44 72%);
+}
+.logo-mark img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+.nav-brand-name {
+  font-family: "Outfit", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.nav-menu { gap: 2px; }
+.nav-link {
+  border-radius: 9px;
+  font-size: 13px;
+  color: #50545c;
+  padding: 7px 12px;
+}
+.nav-link:hover {
+  background: #f0f1ec;
+  color: #272829;
+}
+.nav-link.active {
+  background: var(--passio-accent-soft);
+  color: var(--passio-accent);
+  border: 1px solid #d6deef;
+}
+.btn.btn-navy {
+  background: var(--passio-accent);
+  border-color: var(--passio-accent);
+  color: #fff;
+}
+.btn.btn-navy:hover {
+  background: #1f2b44;
+}
+.btn.btn-out {
+  background: #fff;
+  border: 1px solid #d9ddd3;
+  color: #35393f;
+}
+.btn.btn-out:hover {
+  background: #f0f1ec;
+}
+.container.section {
+  width: min(1120px, 100% - 32px);
+  margin: 0 auto;
+  padding-top: 26px;
+  padding-bottom: 44px;
+}
+.card,
+.panel,
+.subject-card,
+.history-card,
+.result-shell,
+.quiz-card,
+.admin-table-wrap {
+  border-radius: 18px !important;
+  border: 1px solid #e0e3dc !important;
+  background: linear-gradient(180deg, #ffffff, #fbfcfa) !important;
+  box-shadow: 0 12px 28px rgba(16, 21, 29, 0.08) !important;
+}
+.dash-pill,
+.dash-chip,
+.status-chip {
+  border-radius: 999px;
+  border: 1px solid #d8dfef;
+  background: var(--passio-accent-soft);
+  color: var(--passio-accent);
+}
+.footer,
+footer {
+  border-top: 1px solid #dde2d8;
+  background: #fff;
+}
+.f-copy {
+  color: #6e7278;
+}
+@media (max-width: 900px) {
+  .page {
+    padding-top: 64px;
+  }
+  .nav {
+    height: 64px;
+    padding: 0 14px;
+  }
+  .container.section {
+    width: min(1120px, 100% - 20px);
   }
 }

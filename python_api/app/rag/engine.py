@@ -645,6 +645,13 @@ def _repair_audit(report: dict, docs: list, llm: ChatOllama) -> dict:
 # 서비스 실행 로직
 # ─────────────────────────────────────────────
 def solve_items(items: list, force_rebuild: bool = False) -> List[SolveResult]:
+    # 표→서술: JSON 포맷 강제 없음, 짧은 num_predict로 비용 절감
+    llm_table = ChatOllama(
+        model=settings.OLLAMA_MODEL,
+        base_url=settings.OLLAMA_HOST,
+        temperature=0,
+        num_predict=settings.RAG_TABLE_FIX_NUM_PREDICT,
+    )
     embed = OllamaEmbeddings(
         model=settings.OLLAMA_EMBED_MODEL, base_url=settings.OLLAMA_HOST
     )
@@ -657,21 +664,13 @@ def solve_items(items: list, force_rebuild: bool = False) -> List[SolveResult]:
         format="json",
         num_predict=settings.OLLAMA_SOLVE_NUM_PREDICT,
     )
-    # 쿼리 재작성: 항상 수행하되, 메인 해설과 분리해 짧은 생성만 사용 (노이즈 제거 목적 유지)
-    llm_rewrite = ChatOllama(
-        model=settings.OLLAMA_MODEL,
-        base_url=settings.OLLAMA_HOST,
-        temperature=0,
-        format="json",
-        num_predict=settings.OLLAMA_REWRITE_NUM_PREDICT,
+
+    # DB 연결 (PostgreSQL)
+    import psycopg2
+    db_conn = psycopg2.connect(
+        os.environ.get("DATABASE_URL", "postgresql://sikdorak_app:sikdorak_password@127.0.0.1:5432/sikdorak")
     )
-    # 표→서술: JSON 포맷 강제 없음, 짧은 num_predict로 비용 절감
-    llm_table = ChatOllama(
-        model=settings.OLLAMA_MODEL,
-        base_url=settings.OLLAMA_HOST,
-        temperature=0,
-        num_predict=settings.RAG_TABLE_FIX_NUM_PREDICT,
-    )
+    db_cur = db_conn.cursor()
 
     rt = _rag_runtime_config()
 
@@ -689,15 +688,22 @@ def solve_items(items: list, force_rebuild: bool = False) -> List[SolveResult]:
 
         payload = f"문제: {item.q}\n보기: {item.opts}\n오답: {item.wrong}\n정답: {item.ans}"
         question_terms = _extract_terms(f"{item.q} {item.opts} {item.wrong} {item.ans}")
-        
-        # 1. 쿼리 재작성
-        t0 = perf_counter()
-        rewrite_res = llm_rewrite.invoke(
-            _REWRITE_TEMPLATE.format(cert_name=settings.CERT_NAME, payload=payload), think=False
-        )
-        query = _extract_json(rewrite_res.content).get("query", item.q)
+
+        # 1. search_query 필드가 있으면 우선 사용 (벤치마크 목적)
+        if hasattr(item, 'search_query') and getattr(item, 'search_query', None):
+            query = getattr(item, 'search_query')
+        else:
+            # 1. DB에서 search_query 직접 조회
+            db_cur.execute(
+                "SELECT search_query FROM questions WHERE question=%s LIMIT 1;",
+                (item.q,)
+            )
+            row = db_cur.fetchone()
+            if row and row[0]:
+                query = row[0]
+            else:
+                query = item.q  # fallback
         query_terms = _extract_terms(query)
-        t_rewrite = perf_counter()
         
         # 2. RAG 검색 (점수 기반 필터 → 부족하면 fallback)
         scored_docs = db.similarity_search_with_relevance_scores(query, k=12)
@@ -833,7 +839,7 @@ def solve_items(items: list, force_rebuild: bool = False) -> List[SolveResult]:
         if RAG_TIMING_LOG:
             print(
                 "[RAG timing] "
-                f"rewrite={t_rewrite - t0:.2f}s search={t_search - t_rewrite:.2f}s "
+                f"search={t_search - t_item0:.2f}s "
                 f"table={t_table - t_search:.2f}s main={t_main - t_table:.2f}s "
                 f"body_retry_block={t_body - t_main:.2f}s refine={t_refine - t_body:.2f}s "
                 f"total={perf_counter() - t_item0:.2f}s"

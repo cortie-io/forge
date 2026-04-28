@@ -117,6 +117,15 @@ async function pollJob(jobId) {
     const job = d.job || {};
     if (job.status === "completed") {
       setRetryActions("");
+      // 체감 속도 측정: 해설 완료 시 전체 소요 시간 출력
+      try {
+        const start = parseInt(localStorage.getItem("explainStart") || "0", 10);
+        if (start > 0) {
+          const elapsed = Date.now() - start;
+          console.log(`[AI 해설 체감속도] ${(elapsed / 1000).toFixed(2)}초`);
+          localStorage.removeItem("explainStart");
+        }
+      } catch {}
       // fromQuiz 파라미터가 있으면 quiz-attempt(세션 상세)로 이동, 아니면 기존대로 history로 이동
       const params = new URLSearchParams(location.search);
       const fromQuiz = params.get("fromQuiz");

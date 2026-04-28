@@ -2,7 +2,7 @@
 #
 # Repository Secrets:
 #   DEPLOY_SSH_PRIVATE_KEY  (전체 PEM)
-#   DEPLOY_HOST             (예: ubuntu@sikdorak.org)
+#   DEPLOY_HOST             (예: ubuntu@passio.cortie.io)
 #   DEPLOY_PATH             (원격 프로젝트 루트, pages·assets 상위)
 # 선택:
 #   REMOTE_NGINX_RELOAD     (예: sudo nginx -s reload)
@@ -51,7 +51,7 @@ jobs:
 
       - name: Smoke (quiz-attempt 존재 여부)
         run: |
-          code=$(curl -sS -o /dev/null -w "%{http_code}" "https://sikdorak.org/pages/quiz-attempt.html" || echo 000)
+          code=$(curl -sS -o /dev/null -w "%{http_code}" "https://passio.cortie.io/pages/quiz-attempt.html" || echo 000)
           echo "HTTP quiz-attempt.html -> $code (200 이어야 함)"
-          curl -sS "https://sikdorak.org/api/health" | head -c 400
+          curl -sS "https://passio.cortie.io/api/health" | head -c 400
           echo

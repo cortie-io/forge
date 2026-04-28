@@ -7,19 +7,19 @@
 #
 # 관련 문서: docs/SYSTEM-ARCHITECTURE.md
 export PYTHONPATH=/home/ubuntu/sikdorak/python_api
-export VIRTUAL_ENV=/home/ubuntu/sikdorak/.venv
-export PATH=/home/ubuntu/sikdorak/.venv/bin:$PATH
+export VIRTUAL_ENV=/home/ubuntu/passio/.venv
+export PATH=/home/ubuntu/passio/.venv/bin:$PATH
 export OLLAMA_HOST=http://100.79.44.109:11434
 export OLLAMA_MODEL=gemma4-e4b:latest
 export OLLAMA_EMBED_MODEL=bge-m3:latest
-export CHROMA_DB_DIR=/home/ubuntu/sikdorak/python_api/chroma_db
-export PDF_PATH='/home/ubuntu/sikdorak/RAG/네트워크관리사.pdf'
-export MD_PATH=/home/ubuntu/sikdorak/RAG/theory_only.md
+export CHROMA_DB_DIR=/home/ubuntu/passio/python_api/chroma_db
+export PDF_PATH='/home/ubuntu/passio/RAG/네트워크관리사.pdf'
+export MD_PATH=/home/ubuntu/passio/RAG/theory_only.md
 # 기본 품질 우선(RAG_ALWAYS_FAST=0). 속도 프로파일만 필요하면 RAG_ALWAYS_FAST=1.
-export RAG_ALWAYS_FAST="${RAG_ALWAYS_FAST:-0}"
-# 동일 문항: 메모리 LRU + 디스크 캐시(재시작 후에도 히트)
+export RAG_ALWAYS_FAST=1
+export RAG_SOLVE_MAX_PARALLEL=4
 export RAG_SOLVE_CACHE_MAX="${RAG_SOLVE_CACHE_MAX:-400}"
 export RAG_SOLVE_DISK_CACHE="${RAG_SOLVE_DISK_CACHE:-1}"
 export RAG_TIMING_LOG="${RAG_TIMING_LOG:-1}"
-cd /home/ubuntu/sikdorak/python_api
-exec /home/ubuntu/sikdorak/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001 --proxy-headers
+cd /home/ubuntu/passio/python_api
+exec /home/ubuntu/passio/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001 --proxy-headers

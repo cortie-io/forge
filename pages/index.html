@@ -1,425 +1,233 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passio | Cortie Learning Loop</title>
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<title>Passio — AI 자격증 학습 플랫폼</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/lora@5/600.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/400.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/500.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit@5/600.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/300.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/400.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/nunito@5/600.css">
 <style>
-:root{
-  --bg:#F7F4EF;--surface:#FFFFFF;--s1:#F0EDE7;--s2:#E6E1D9;--bd:#DDD8CF;
-  --navy:#253350;--navy-l:#EBF0F9;--navy-b:#C8D7F0;
-  --amber:#96600F;--amber-l:#FDF5E8;--amber-b:#F5D8A8;
-  --t1:#17130E;--t2:#6B5E52;--t3:#B0A08F;
-  --grn:#1E6641;--grn-l:#EDFAF2;--grn-b:#A7E8C5;
-  --red:#B83232;--red-l:#FEF2F2;--red-b:#F5C0C0;
-  --r:10px;--rl:14px;
-  --sh:0 1px 4px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.04);
-  --sh-h:0 8px 24px rgba(0,0,0,.09),0 0 0 1px rgba(0,0,0,.06)
-}
+:root{--white:#F8F9F5;--ink:#272829;--muted:#667085;--line:rgba(39,40,41,.08);--soft:#F0F1EC;--dark:#272829;--green:#3D8E72;--rf:999px}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{font-family:'Outfit','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:transparent;line-height:1.6;color:var(--t1)}
-#app{background:var(--bg);min-height:100vh}
-.screen{display:none}
-.screen.active{display:block;animation:fu .3s ease both}
-@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-button{font-family:inherit;cursor:pointer;transition:all .16s}
+body{font-family:Nunito,sans-serif;background:var(--white);color:var(--ink);font-weight:300}
+a{text-decoration:none;color:inherit}
 
-.btn{padding:10px 20px;border-radius:var(--r);font-size:14px;font-weight:500;border:none;display:inline-flex;align-items:center;gap:6px;letter-spacing:-.01em}
-.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:#1C2840;transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,51,80,.28)}
-.btn-out{background:var(--surface);color:var(--t1);border:1px solid var(--bd)}.btn-out:hover{background:var(--s1);border-color:var(--s2)}
-.btn-lg{padding:12px 26px;font-size:15px}
-.btn-full{width:100%;justify-content:center}
-.btn-sm{padding:7px 14px;font-size:13px;border-radius:8px}
-.btn-sec{background:var(--surface);border:1px solid var(--bd);color:var(--t1);padding:10px 22px;font-weight:500;border-radius:var(--r)}.btn-sec:hover{background:var(--s1)}
+/* main server nav pattern */
+.n-nav{position:fixed;inset:0 0 auto 0;z-index:99;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 42px;background:#f8f9f5ea;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.n-logo{display:flex;align-items:center;gap:8px}.brand-mark{height:36px}.brand-text{height:22px;margin-left:-1px}.n-service-sep{font-size:14px;color:#b8bec8;margin:0 2px 0 4px}.n-service{font-size:13px;font-weight:700;letter-spacing:.06em;color:#64748b}
+.n-links{display:flex;gap:26px;list-style:none}.n-group-btn{font-family:inherit;background:none;border:none;color:#5c6270;font-size:13px;font-weight:400;cursor:pointer}.n-group-btn:hover,.n-group-btn.active{color:#2e333d}
+.n-actions{display:flex;gap:10px;align-items:center}.n-user{color:#525a67;font-size:13px}.n-login{font-family:inherit;font-size:12px;font-weight:400;color:#616878;padding:0 8px;background:none;border:none;appearance:none;line-height:1.2;cursor:pointer}.n-start{font-size:12px;font-weight:500;color:#fff;background:var(--dark);padding:9px 16px;border-radius:var(--rf)}
+.n-start:hover{background:var(--green)}
+.n-mega{position:fixed;top:68px;left:0;right:0;z-index:140;border-bottom:1px solid var(--line);background:#fffffffa;backdrop-filter:blur(10px)}
+.n-mega-inner{max-width:1400px;margin:0 auto;padding:16px 42px 18px}.n-mega-head{display:flex;gap:10px;margin-bottom:12px}.n-mega-head p{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#667085}.n-mega-head span{font-size:12px;color:#808694}
+.n-mega-list{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 24px}.n-mega-link{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid rgba(220,224,229,.6)}.n-mega-link strong{font-size:14px;font-weight:600}.n-mega-link span{font-size:12px;color:#525a67;line-height:1.6}
 
-/* ── NAV ── */
-.nav{display:flex;align-items:center;justify-content:space-between;padding:0 2.4rem;height:62px;background:linear-gradient(180deg,rgba(247,244,239,.96),rgba(247,244,239,.88));border-bottom:1px solid rgba(37,51,80,.08);backdrop-filter:blur(8px);position:sticky;top:0;z-index:30}
-.nav-logo{display:flex;align-items:center;gap:11px;color:var(--t1);text-decoration:none}
-.nav-brand-name{font-family:'Lora',Georgia,serif;font-size:21px;font-weight:600;letter-spacing:-.02em}
-.logo-mark{width:32px;height:32px;background:var(--navy);border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 12px rgba(37,51,80,.15)}
-.logo-mark svg{width:17px;height:17px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
-.nav-r{display:flex;gap:10px;align-items:center}
-.nav-user{font-size:12px;font-weight:600;color:var(--navy);border:1px solid var(--navy-b);background:var(--navy-l);padding:5px 10px;border-radius:999px}
-@media(max-width:640px){.nav{padding:0 1rem;height:58px}.nav-brand-name{font-size:18px}.logo-mark{width:28px;height:28px;border-radius:8px}.logo-mark svg{width:15px;height:15px}}
+main{padding-top:68px}
+.shell{max-width:1180px;margin:0 auto;padding:0 28px}
 
-/* ── HERO ── */
-.hero-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:920px;margin:0 auto;padding:4.5rem 2.5rem 3.5rem}
-@media(max-width:640px){.hero-wrap{grid-template-columns:1fr;gap:2.5rem;padding:3rem 1.5rem}}
-.hero-tag{display:inline-block;font-size:12px;font-weight:500;color:var(--navy);background:var(--navy-l);border:1px solid var(--navy-b);border-radius:100px;padding:4px 14px;margin-bottom:1.5rem;letter-spacing:.01em}
-.hero-left h1{font-family:'Lora',Georgia,serif;font-size:clamp(30px,4.5vw,46px);font-weight:600;line-height:1.22;letter-spacing:-.02em;color:var(--t1);margin-bottom:1rem}
-.hero-left h1 em{font-style:normal;color:var(--navy)}
-.hero-left p{font-size:15px;color:var(--t2);line-height:1.75;margin-bottom:2rem;max-width:380px}
-.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.hero{padding:58px 0 48px;display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}
+.eyebrow{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.11em;color:#7b8492;text-transform:uppercase}
+.hero h1{margin-top:12px;font-size:clamp(38px,4.8vw,60px);line-height:1.08;letter-spacing:-.03em;font-weight:300}
+.hero p{margin-top:14px;max-width:58ch;font-size:15px;line-height:1.78;color:#5b6472}
+.hero-actions{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}
+.btn-dark,.btn-light{padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid transparent;cursor:pointer}
+.btn-dark{background:var(--dark);color:#fff}.btn-dark:hover{background:var(--green)}
+.btn-light{background:#fff;border-color:#d8ddd4;color:#374151}
 
-/* PREVIEW CARD */
-.prev-card{background:var(--surface);border-radius:var(--rl);box-shadow:var(--sh-h);overflow:hidden}
-.prev-hd{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.prev-hd-title{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
-.prev-hd-badge{font-size:11px;background:rgba(255,255,255,.15);color:#fff;padding:3px 10px;border-radius:100px}
-.prev-body{padding:18px}
-.prev-q-label{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
-.prev-q{font-size:14px;color:var(--t1);line-height:1.65;margin-bottom:14px;font-weight:500}
-.prev-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.prev-opt{font-size:12px;padding:7px 11px;border-radius:7px;border:1px solid var(--bd);color:var(--t2);background:var(--bg)}
-.prev-opt.sel{background:var(--navy-l);border-color:var(--navy-b);color:var(--navy);font-weight:500}
-.prev-exp{background:var(--amber-l);border:1px solid var(--amber-b);border-radius:8px;padding:10px 13px}
-.prev-exp-lbl{font-size:11px;font-weight:600;color:var(--amber);margin-bottom:4px;letter-spacing:.04em}
-.prev-exp-txt{font-size:12px;color:var(--t2);line-height:1.65}
+.kpi-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.kpi-title{font-size:12px;color:#64748b;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.kpi-grid{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{border:1px solid #e4e8e0;border-radius:12px;padding:12px;background:#fafbf9}
+.kpi strong{display:block;font-size:24px;line-height:1;font-weight:300}
+.kpi span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#80889a}
 
-/* STATS */
-.stats{border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);background:var(--surface)}
-.stats-inner{max-width:920px;margin:0 auto;padding:0 2.5rem;display:flex}
-.stat{flex:1;padding:1.5rem 1rem;text-align:center;border-right:1px solid var(--bd)}
-.stat:last-child{border-right:none}
-.stat-n{font-family:'Lora',Georgia,serif;font-size:28px;font-weight:600;color:var(--t1);line-height:1}
-.stat-l{font-size:13px;color:var(--t3);margin-top:4px}
+.band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
+.band-inner{max-width:1180px;margin:0 auto;padding:14px 28px;display:grid;grid-template-columns:repeat(4,1fr)}
+.band-item{text-align:center;border-right:1px solid var(--line)}.band-item:last-child{border-right:none}
+.band-item strong{display:block;font-size:30px;font-weight:300}.band-item span{font-size:10px;color:#8a92a2;letter-spacing:.1em;text-transform:uppercase}
 
-.api-doc-band{max-width:920px;margin:1.2rem auto 0;padding:0 2.5rem}
-.api-doc-card{display:flex;align-items:center;justify-content:space-between;gap:1.25rem;padding:1.2rem 1.3rem;border:1px solid var(--navy-b);background:linear-gradient(135deg,#f7fbff,#eef4ff);border-radius:var(--rl);box-shadow:var(--sh)}
-.api-doc-copy{display:grid;gap:4px}
-.api-doc-copy strong{font-size:17px;letter-spacing:-.02em;color:var(--navy)}
-.api-doc-copy p{font-size:13px;color:var(--t2);max-width:58ch}
-.api-doc-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0}
-.api-doc-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;color:var(--navy);background:#fff;border:1px solid var(--navy-b);border-radius:999px;padding:4px 10px;width:max-content}
+.block{padding:46px 0}
+.block h2{font-size:clamp(30px,3.6vw,44px);letter-spacing:-.022em;font-weight:300}
+.block .lead{margin-top:10px;max-width:64ch;color:#5b6472;line-height:1.75}
+.grid{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{background:#fff;border:1px solid #e5e9e1;border-radius:12px;padding:15px}
+.tile .num{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.1em;color:#7b8391}
+.tile h3{margin-top:8px;font-size:18px;font-weight:600}.tile p{margin-top:7px;color:#5b6472;font-size:14px;line-height:1.65}
 
-/* CERTS */
-.section{max-width:920px;margin:0 auto;padding:3.5rem 2.5rem}
-@media(max-width:640px){.section{padding:2.5rem 1.5rem}}
-.sec-hd{margin-bottom:2rem}
-.sec-tag{font-size:11px;font-weight:600;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
-.sec-title{font-family:'Lora',Georgia,serif;font-size:clamp(20px,3vw,28px);font-weight:600;color:var(--t1);letter-spacing:-.02em;margin-bottom:.35rem}
-.sec-sub{font-size:14px;color:var(--t2)}
-.cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:640px){.cert-grid{grid-template-columns:repeat(2,1fr)}}
-.cert-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);padding:1.25rem;transition:all .2s;cursor:pointer;position:relative}
-.cert-card:hover{box-shadow:var(--sh-h);transform:translateY(-3px);border-color:var(--navy-b)}
-.cert-e{font-size:26px;margin-bottom:10px;display:block}
-.cert-n{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:3px;line-height:1.3}
-.cert-cat{font-size:11px;color:var(--t3)}
-.cert-badge{position:absolute;top:10px;right:10px;font-size:10px;font-weight:600;color:var(--amber);background:var(--amber-l);border:1px solid var(--amber-b);padding:2px 8px;border-radius:100px}
+.timeline{margin-top:18px;display:grid;gap:10px}
+.t-row{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid #e6e9e2}
+.t-step{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;color:#7b8492}.t-desc h4{font-size:17px;font-weight:600}.t-desc p{margin-top:4px;color:#5f6876;line-height:1.65}
 
-/* STEPS */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:540px){.steps{grid-template-columns:1fr}}
-.step{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);padding:1.5rem}
-.step-n{width:28px;height:28px;border-radius:8px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;margin-bottom:12px}
-.step h3{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:5px}
-.step p{font-size:13px;color:var(--t2);line-height:1.65}
+.cta{margin:0 0 42px;background:#2b2d31;color:#fff;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.cta h3{font-size:clamp(22px,2.8vw,32px);font-weight:300;letter-spacing:-.018em;line-height:1.2}
 
-/* CTA */
-.cta-section{padding:0 2.5rem 3.5rem;max-width:920px;margin:0 auto}
-@media(max-width:640px){.cta-section{padding:0 1.5rem 3rem}}
-.cta-box{background:var(--navy);border-radius:var(--rl);padding:2.75rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
-.cta-copy h2{font-family:'Lora',Georgia,serif;font-size:clamp(18px,3vw,26px);font-weight:600;color:#fff;margin-bottom:6px;letter-spacing:-.01em}
-.cta-copy p{font-size:14px;color:rgba(255,255,255,.6)}
-.btn-white{background:#fff;color:var(--navy);padding:11px 26px;font-size:14px;font-weight:600;border-radius:var(--r);border:none;white-space:nowrap}.btn-white:hover{background:#F0EDE7}
+.rich-footer{border-top:1px solid var(--line);background:#fff;padding:28px 24px 16px}
+.rich-footer-top{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1.35fr 1fr 1.2fr 1fr;gap:22px}
+.rich-footer-brand p{margin-top:10px;font-size:13px;color:#667085;line-height:1.65;max-width:360px}
+.rich-footer-col h4{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b7280;margin-bottom:8px}
+.rich-footer-col a{display:block;font-size:12px;color:#4b5563;margin-bottom:6px}.rich-footer-col a:hover{color:#111827}
+.rich-status{font-size:12px;color:#4b5563;display:flex;align-items:center;gap:8px;margin-bottom:6px}.rich-status i{width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;box-shadow:0 0 0 3px rgba(134,239,172,.22)}
+.rich-footer-bottom{max-width:1400px;margin:14px auto 0;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.rich-copy{font-size:10px;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase}
 
-/* FOOTER */
-footer{border-top:1px solid var(--bd);padding:1.5rem 2.5rem;background:var(--surface);display:flex;align-items:center;justify-content:space-between}
-.f-logo{font-size:13px;font-weight:600;color:var(--t3);display:flex;align-items:center;gap:7px}
-.f-copy{font-size:12px;color:var(--t3)}
+@media(max-width:980px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.rich-footer-top{grid-template-columns:1fr 1fr}.n-links{display:flex;gap:10px;overflow-x:auto;white-space:nowrap;max-width:48vw}.n-nav{padding:0 14px}.n-mega{top:68px}.shell{padding:0 18px}.band-inner{padding:14px 18px}}
+@media(max-width:620px){.grid,.rich-footer-top{grid-template-columns:1fr}.band-inner{grid-template-columns:1fr 1fr}}
+</style>
+<style id="passio-global-nav-footer-v1">
+/* global fixes for all passio pages */
+.n-actions{display:flex;gap:10px;align-items:center}
+.n-user{color:#525a67;font-size:13px}
+.n-login{font-family:inherit;font-size:12px;font-weight:400;color:#616878;padding:0 8px;background:none;border:none;appearance:none;line-height:1.2;cursor:pointer;text-decoration:none}
+.n-login:hover{color:#2e333d}
+.n-start{font-size:12px;font-weight:500;color:#fff;background:#272829;padding:9px 16px;border-radius:999px;text-decoration:none;border:none}
+.n-start:hover{background:#3D8E72}
 
-/* ── APP HDR ── */
-.app-hd{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:1px solid var(--bd);background:var(--surface)}
-.ahd-logo{font-size:14px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:9px}
-.ahd-r{display:flex;align-items:center;gap:10px}
-.ava{width:30px;height:30px;border-radius:50%;background:var(--navy-l);border:1px solid var(--navy-b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--navy)}
-
-/* ── LOGIN ── */
-.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--bg)}
-.login-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh);padding:2.25rem 2rem;width:100%;max-width:380px}
-.lc-hd{margin-bottom:1.75rem}
-.lc-hd h2{font-family:'Lora',Georgia,serif;font-size:22px;font-weight:600;color:var(--t1);margin-bottom:4px;letter-spacing:-.02em}
-.lc-hd p{font-size:13px;color:var(--t2)}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:6px}
-.field input{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:10px 13px;font-size:14px;color:var(--t1);outline:none;font-family:inherit;transition:border-color .15s}
-.field input:focus{border-color:var(--navy);background:var(--surface)}
-.field input::placeholder{color:var(--t3)}
-.err-msg{font-size:12px;color:var(--red);margin-top:10px;min-height:16px}
-.login-hint{font-size:12px;color:var(--t3);margin-top:12px;text-align:center}
-.login-hint span{color:var(--navy);cursor:pointer;font-weight:500}
-.login-back{margin-top:10px;text-align:center}
-.login-back a{font-size:13px;color:var(--t3);cursor:pointer}.login-back a:hover{color:var(--t1)}
-
-/* ── DASH ── */
-.dash-body{max-width:760px;margin:0 auto;padding:2.5rem 2rem}
-.dash-greet{padding-bottom:1.75rem;border-bottom:1px solid var(--bd);margin-bottom:2rem}
-.dash-greet h2{font-family:'Lora',Georgia,serif;font-size:22px;font-weight:600;color:var(--t1);letter-spacing:-.02em}
-.dash-greet p{font-size:14px;color:var(--t2);margin-top:4px}
-.dl-lbl{font-size:12px;font-weight:600;color:var(--t3);letter-spacing:.04em;margin-bottom:8px;text-transform:uppercase}
-.diff-row{display:flex;gap:6px;margin-bottom:2rem}
-.diff-t{padding:7px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);background:var(--surface);border:1px solid var(--bd);font-family:inherit;transition:all .15s}
-.diff-t.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.dash-cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.dc{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);padding:1.25rem;cursor:pointer;transition:all .18s;animation:fu .3s ease both}
-.dc:hover{box-shadow:var(--sh-h);transform:translateY(-3px);border-color:var(--navy-b)}
-.dc-e{font-size:28px;margin-bottom:10px;display:block}
-.dc-n{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:3px}
-.dc-d{font-size:12px;color:var(--t3)}
-
-/* ── QUIZ ── */
-.quiz-body{max-width:600px;margin:0 auto;padding:2rem 1.5rem}
-.qz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
-.qz-info{font-size:13px;color:var(--t2)}.qz-info strong{color:var(--t1);font-weight:600}
-.qz-tag{font-size:12px;color:var(--t3);background:var(--s1);border:1px solid var(--bd);border-radius:100px;padding:3px 12px}
-.prog{height:3px;background:var(--s2);border-radius:2px;margin-bottom:2rem;overflow:hidden}
-.prog-f{height:100%;background:var(--navy);border-radius:2px;transition:width .4s ease}
-.q-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh);padding:2rem;margin-bottom:12px}
-.q-n{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
-.q-txt{font-size:16px;color:var(--t1);line-height:1.72;margin-bottom:1.5rem;font-weight:500}
-.opts{display:flex;flex-direction:column;gap:8px}
-.opt{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg);cursor:pointer;font-size:14px;color:var(--t2);font-family:inherit;text-align:left;transition:all .15s;width:100%}
-.opt:hover:not(:disabled){border-color:var(--s2);background:var(--s1);color:var(--t1)}
-.opt.sel{border-color:var(--navy-b);background:var(--navy-l);color:var(--t1)}
-.opt:disabled{cursor:default}
-.opt-n{min-width:26px;height:26px;border-radius:6px;background:var(--s1);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;transition:all .15s;color:var(--t3)}
-.opt.sel .opt-n{background:var(--navy);border-color:var(--navy);color:#fff}
-.next-wrap{text-align:right;margin-top:1.25rem}
-.btn-next:disabled{background:var(--s2);color:var(--t3);cursor:not-allowed;transform:none!important;box-shadow:none!important}
-.load-wrap{text-align:center;padding:5rem 2rem}
-.spin{width:32px;height:32px;border:2.5px solid var(--s2);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1.25rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-.load-wrap p{font-size:15px;color:var(--t2);font-weight:500}
-.load-sub{font-size:13px;color:var(--t3);margin-top:5px}
-
-/* ── RESULTS ── */
-.res-body{max-width:600px;margin:0 auto;padding:2rem 1.5rem}
-.score-card{background:var(--surface);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh);padding:2.5rem;text-align:center;margin-bottom:1.5rem}
-.score-num{font-family:'Lora',Georgia,serif;font-size:64px;font-weight:600;color:var(--navy);line-height:1;letter-spacing:-.03em;margin-bottom:6px}
-.score-msg{font-size:15px;color:var(--t2);margin-bottom:1.25rem}
-.score-pills{display:flex;gap:8px;justify-content:center}
-.spill{padding:5px 16px;border-radius:100px;font-size:13px;font-weight:500}
-.spill-ok{background:var(--grn-l);color:var(--grn);border:1px solid var(--grn-b)}
-.spill-ng{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
-.res-sec-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin:1.75rem 0 10px}
-.ri{background:var(--surface);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:var(--r);padding:1.25rem;margin-bottom:8px;box-shadow:var(--sh)}
-.ri.ok{border-left-color:var(--grn)}.ri.ng{border-left-color:var(--red)}
-.ri-q{font-size:14px;color:var(--t1);margin-bottom:8px;line-height:1.6;font-weight:500}
-.ri-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.tag{font-size:12px;padding:3px 12px;border-radius:100px;font-weight:500}
-.tag-ng{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
-.tag-ok{background:var(--grn-l);color:var(--grn);border:1px solid var(--grn-b)}
-.exp-box{background:var(--amber-l);border:1px solid var(--amber-b);border-radius:8px;padding:11px 14px}
-.exp-lbl{font-size:11px;font-weight:600;color:var(--amber);letter-spacing:.05em;margin-bottom:4px}
-.exp-txt{font-size:13px;color:var(--t2);line-height:1.7}
-.exp-box.ld{background:var(--s1);border-color:var(--bd);display:flex;align-items:center;gap:8px}
-.mspin{width:12px;height:12px;border:1.5px solid var(--s2);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-.exp-box.ld .exp-txt{color:var(--t3);font-size:12px}
-.res-btns{display:flex;gap:8px;margin-top:1.75rem}
-
-/* Refinement layer */
-html,body{background:
-  radial-gradient(980px 400px at -8% -12%, rgba(150,96,15,.12), transparent 60%),
-  radial-gradient(880px 430px at 112% 8%, rgba(37,51,80,.12), transparent 62%),
-  linear-gradient(180deg,#f9f6f1 0%,var(--bg) 44%,#efe7db 100%)}
-
-#app{position:relative;isolation:isolate;background:transparent}
-
-.nav{box-shadow:0 10px 28px rgba(16,22,35,.05);border-bottom-color:rgba(37,51,80,.11)}
-.logo-mark{background:linear-gradient(145deg,#314467,#1e2a44 70%)}
-
-.btn{transition:transform .15s ease,box-shadow .2s ease,background-color .2s ease,border-color .2s ease}
-.btn-navy{background:linear-gradient(130deg,#2a3e63,#1f2e4a 74%);box-shadow:0 7px 18px rgba(37,51,80,.24)}
-.btn-navy:hover{box-shadow:0 10px 24px rgba(37,51,80,.29)}
-.btn:focus-visible,.opt:focus-visible,input:focus-visible,a:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,51,80,.22),0 0 0 1px rgba(37,51,80,.34)}
-
-.hero-wrap{max-width:1040px;padding:4.8rem 2.8rem 3.8rem}
-.hero-left p{max-width:52ch;line-height:1.8}
-.hero-wrap>*{animation:riseIn .55s ease both}
-.hero-wrap>*:last-child{animation-delay:.12s}
-@keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-.prev-card,.cert-card,.step,.cta-box,.login-card,.q-card,.score-card,.ri{box-shadow:0 10px 30px rgba(19,28,43,.08),0 1px 0 rgba(255,255,255,.85) inset;border-color:rgba(48,61,88,.12)}
-
-.prev-card{position:relative;overflow:hidden}
-.prev-card:after{content:"";position:absolute;inset:auto -20% -42% -20%;height:48%;background:radial-gradient(60% 60% at 50% 0%, rgba(37,51,80,.08), transparent 80%);pointer-events:none}
-
-.stats{background:linear-gradient(180deg,rgba(255,255,255,.84),rgba(255,255,255,.95));backdrop-filter:blur(4px)}
-
-.cert-card{overflow:hidden}
-.cert-card:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,rgba(150,96,15,.35),rgba(37,51,80,.4));opacity:0;transition:opacity .18s ease}
-.cert-card:hover:before{opacity:1}
-
-.cta-box{background:linear-gradient(135deg,#1f2e4a,#2d436a)}
-
-@media(max-width:760px){
-  .hero-wrap{padding:3.2rem 1.4rem 2.8rem}
-  .stats-inner{padding:0 1rem;display:grid;grid-template-columns:repeat(2,1fr)}
-  .stat{border-right:1px solid var(--bd)}
-  .stat:nth-child(2n){border-right:none}
-  .api-doc-band{padding:0 1rem}
-  .api-doc-card{align-items:flex-start;flex-direction:column;padding:1rem}
-  .api-doc-actions{width:100%}
-  .api-doc-actions .btn{flex:1;justify-content:center}
-}
-
-html{-webkit-text-size-adjust:100%}
-#app{overflow-x:clip;max-width:100%}
-img,svg,video{max-width:100%;height:auto}
-
-@media(max-width:520px){
-  footer{flex-direction:column;align-items:flex-start;gap:10px;padding:1.25rem 1rem}
-  .login-wrap{padding:1.25rem}
-  .login-card{padding:1.75rem 1.25rem}
-  .dash-body,.quiz-body,.res-body{padding-left:1rem;padding-right:1rem}
-  .q-card,.score-card{padding:1.35rem 1.1rem}
-  .score-num{font-size:clamp(40px,14vw,64px)}
-  .diff-row{flex-wrap:wrap}
-  .app-hd{padding:0 1rem}
-}
+.rich-footer{border-top:1px solid rgba(39,40,41,.08);background:#fff;padding:28px 24px 16px}
+.rich-footer-top{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1.35fr 1fr 1.2fr 1fr;gap:22px}
+.rich-footer-brand p{margin-top:10px;font-size:13px;color:#667085;line-height:1.65;max-width:360px}
+.rich-footer-col h4{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6b7280;margin-bottom:8px}
+.rich-footer-col a{display:block;font-size:12px;color:#4b5563;margin-bottom:6px;text-decoration:none}
+.rich-footer-col a:hover{color:#111827}
+.rich-status{font-size:12px;color:#4b5563;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.rich-status i{width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;box-shadow:0 0 0 3px rgba(134,239,172,.22)}
+.rich-footer-bottom{max-width:1400px;margin:14px auto 0;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.rich-copy{font-size:10px;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:980px){.rich-footer-top{grid-template-columns:1fr 1fr;gap:16px}}
+@media(max-width:620px){.rich-footer-top{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="app">
-<!-- ═══ HOME ═══ -->
-<div id="s-home" class="screen active">
-  <nav class="nav">
-    <a class="nav-logo" href="/pages/index.html" aria-label="홈으로 이동">
-      <div class="logo-mark"><svg viewBox="0 0 15 15"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></div>
-      <span class="nav-brand-name">Passio</span>
-    </a>
-    <div class="nav-r">
-      <button class="btn btn-out btn-sm" id="home-login-btn">로그인</button>
-      <button class="btn btn-navy btn-sm" id="home-start-btn">무료 시작</button>
+<nav class="n-nav" aria-label="Cortie navigation">
+  <a href="https://cortie.io" class="n-logo">
+    <img src="/assets/shape_logo.svg?v=20260425fix3" alt="cortie symbol" class="brand-mark">
+    <img src="/assets/text_logo.svg?v=20260425fix3" alt="cortie" class="brand-text">
+    <span class="n-service-sep">|</span>
+    <span class="n-service">PASSIO</span>
+  </a>
+  <ul class="n-links" id="n-links"></ul>
+  <div class="n-actions" id="n-actions">
+    <a href="https://auth.cortie.io/login?redirect_uri=https%3A%2F%2Fpassio.cortie.io%2Fpages%2Fdashboard.html" class="n-login">Log in</a>
+    <a href="https://auth.cortie.io/signup?redirect_uri=https%3A%2F%2Fpassio.cortie.io%2Fpages%2Fdashboard.html" class="n-start">Get started</a>
     </div>
   </nav>
+<div class="n-mega" id="n-mega" style="display:none;"><div class="n-mega-inner"><div class="n-mega-head"><p id="n-mega-title">Product</p><span>Explore sections in this category</span></div><ul class="n-mega-list" id="n-mega-list"></ul></div></div>
 
-  <div class="hero-wrap">
-    <div class="hero-left">
-      <div class="hero-tag">AI 자격증 학습 플랫폼</div>
-      <h1>모든 자격증,<br><em>AI와 함께라면</em><br>더 빠릅니다</h1>
-      <p>원하는 자격증을 선택하면 AI가 출제 경향에 맞는 문제는 물론, 틀린 문제마다 핵심 해설을 제공합니다.</p>
-      <div class="hero-btns">
-        <button class="btn btn-navy btn-lg" id="hero-cta">지금 시작하기</button>
-        <button class="btn btn-out btn-lg" id="hero-learn">소개 보기 ↓</button>
-      </div>
-    </div>
-    <div class="prev-card">
-      <div class="prev-hd">
-        <span class="prev-hd-title">네트워크기능사 2급 · 기본</span>
-        <span class="prev-hd-badge">Q. 3 / 5</span>
-      </div>
-      <div class="prev-body">
-        <div class="prev-q-label">문제</div>
-        <div class="prev-q">다음 중 OSI 7계층 모델에서 데이터 링크 계층의 주요 기능으로 가장 옳은 것은?</div>
-        <div class="prev-opts">
-          <div class="prev-opt">① 경로 선택 및 라우팅</div>
-          <div class="prev-opt">② 응용 프로그램 서비스 제공</div>
-          <div class="prev-opt sel">③ 오류 검출 및 흐름 제어 ✓</div>
-          <div class="prev-opt">④ 세션 연결 및 해제 관리</div>
-        </div>
-        <div class="prev-exp">
-          <div class="prev-exp-lbl">✦ AI 해설</div>
-          <div class="prev-exp-txt">데이터 링크 계층(2계층)은 인접 노드 간 신뢰성 있는 전송을 위해 오류 검출·수정, 흐름 제어를 담당합니다. 경로 선택은 3계층(네트워크), 세션 관리는 5계층의 역할입니다.</div>
+<main>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">AI-FIRST CERTIFICATION LEARNING</div>
+        <h1>A cleaner path to certification readiness.</h1>
+        <p>Passio is rebuilt around the Cortie product mood: calm visual rhythm, practical AI feedback, and repeatable study loops focused on passing outcomes.</p>
+        <div class="hero-actions">
+          <button class="btn-dark" id="hero-cta">Start learning</button>
+          <button class="btn-light" id="hero-learn">See workflow</button>
         </div>
       </div>
+      <aside class="kpi-wrap">
+        <div class="kpi-title">Session Snapshot</div>
+        <div class="kpi-grid">
+          <div class="kpi"><strong>50</strong><span>questions</span></div>
+          <div class="kpi"><strong>AI</strong><span>explanations</span></div>
+          <div class="kpi"><strong>4</strong><span>core modules</span></div>
+          <div class="kpi"><strong>1</strong><span>priority track</span></div>
     </div>
+      </aside>
+    </section>
   </div>
 
-  <div class="stats">
-    <div class="stats-inner">
-      <div class="stat"><div class="stat-n">1</div><div class="stat-l">우선 도입 과목</div></div>
-      <div class="stat"><div class="stat-n">4</div><div class="stat-l">과목 구성</div></div>
-      <div class="stat"><div class="stat-n">AI</div><div class="stat-l">맞춤 해설</div></div>
-      <div class="stat"><div class="stat-n">50</div><div class="stat-l">문제 / 세션</div></div>
-    </div>
-  </div>
-
-  <div class="api-doc-band">
-    <div class="api-doc-card">
-      <div class="api-doc-copy">
-        <span class="api-doc-badge">Public API Docs</span>
-        <strong>외부 서비스에서 Passio RAG API를 바로 붙일 수 있습니다</strong>
-        <p>엔드포인트, 토큰 발급 방식, 요청 예시, 응답 구조, 에러 코드까지 한 페이지에서 확인할 수 있습니다. 로그인 없이 문서 열람이 가능합니다.</p>
-      </div>
-      <div class="api-doc-actions">
-        <a class="btn btn-out btn-sm" href="/pages/api-guide.html">API 가이드 보기</a>
-        <a class="btn btn-navy btn-sm" href="/pages/login.html">토큰 발급하러 가기</a>
-      </div>
-    </div>
-  </div>
-
-  <section class="section" id="features">
-    <div class="sec-hd">
-      <div class="sec-tag">CERTIFICATIONS</div>
-      <div class="sec-title">어떤 자격증을 준비하세요?</div>
-      <div class="sec-sub">현재는 네트워크기능사 2급을 우선 도입하고, 과목을 순차 확장합니다</div>
-    </div>
-    <div class="cert-grid">
-      <div class="cert-card"><span class="cert-e">🌐</span><div class="cert-n">네트워크기능사 2급</div><div class="cert-cat">IT · 우선 도입</div><div class="cert-badge">우선</div></div>
-      <div class="cert-card"><span class="cert-e">🖥️</span><div class="cert-n">컴퓨터활용능력</div><div class="cert-cat">IT · 상공회의소</div><div class="cert-badge">인기</div></div>
-      <div class="cert-card"><span class="cert-e">🌐</span><div class="cert-n">TOEIC</div><div class="cert-cat">어학 · 영어</div></div>
-      <div class="cert-card"><span class="cert-e">📚</span><div class="cert-n">한국사능력검정</div><div class="cert-cat">인문 · 역사</div></div>
-      <div class="cert-card"><span class="cert-e">🏠</span><div class="cert-n">공인중개사</div><div class="cert-cat">부동산 · 법률</div></div>
-      <div class="cert-card"><span class="cert-e">⚡</span><div class="cert-n">전기기사</div><div class="cert-cat">전기 · 국가기술</div></div>
-      <div class="cert-card"><span class="cert-e">🦺</span><div class="cert-n">산업안전기사</div><div class="cert-cat">안전 · 국가기술</div></div>
-      <div class="cert-card"><span class="cert-e">🏥</span><div class="cert-n">간호사 국가고시</div><div class="cert-cat">보건 · 국가시험</div></div>
+  <section class="band">
+    <div class="band-inner">
+      <div class="band-item"><strong>1</strong><span>priority track</span></div>
+      <div class="band-item"><strong>4</strong><span>subject modules</span></div>
+      <div class="band-item"><strong>AI</strong><span>explanation engine</span></div>
+      <div class="band-item"><strong>50</strong><span>questions / session</span></div>
     </div>
   </section>
 
-  <section class="section" style="padding-top:0">
-    <div class="sec-hd">
-      <div class="sec-tag">HOW IT WORKS</div>
-      <div class="sec-title">3단계로 시작하기</div>
+  <div class="shell">
+    <section class="block" id="features">
+      <h2>One system. Three practical advantages.</h2>
+      <p class="lead">The layout and content are intentionally simplified to match main-server clarity while preserving Passio's certification-focused purpose.</p>
+      <div class="grid">
+        <article class="tile"><div class="num">01</div><h3>Adaptive Practice</h3><p>Question sets evolve by weak topic and recency to keep each session useful.</p></article>
+        <article class="tile"><div class="num">02</div><h3>Reasoned Feedback</h3><p>Every miss gets concise concept-level explanation, not generic answer dumps.</p></article>
+        <article class="tile"><div class="num">03</div><h3>Retention Loop</h3><p>History and replay paths help convert mistakes into stable recall over time.</p></article>
     </div>
-    <div class="steps">
-      <div class="step"><div class="step-n">1</div><h3>자격증 선택</h3><p>준비 중인 자격증과 학습 단계(기본·심화·실전)를 선택합니다.</p></div>
-      <div class="step"><div class="step-n">2</div><h3>AI 문제 풀기</h3><p>RAG 기반 Gemma4가 실제 기출 데이터를 검색해 출제 경향에 맞는 문제를 생성합니다.</p></div>
-      <div class="step"><div class="step-n">3</div><h3>오답 해설 확인</h3><p>틀린 문제마다 핵심 개념과 함께 왜 틀렸는지 상세히 설명해 드립니다.</p></div>
+    </section>
+
+    <section class="block" style="padding-top:0">
+      <h2>Simple execution flow.</h2>
+      <p class="lead">Built to mirror Cortie's product discipline: clear entry, measurable progression, and low-friction repetition.</p>
+      <div class="timeline">
+        <div class="t-row"><div class="t-step">STEP 01</div><div class="t-desc"><h4>Select certification track</h4><p>Pick domain and level, then start with focused baseline sessions.</p></div></div>
+        <div class="t-row"><div class="t-step">STEP 02</div><div class="t-desc"><h4>Run targeted AI practice</h4><p>Answer generated items that reflect pattern, concept balance, and difficulty.</p></div></div>
+        <div class="t-row"><div class="t-step">STEP 03</div><div class="t-desc"><h4>Close weak points</h4><p>Use explanation and replay routes to eliminate repeated errors.</p></div></div>
     </div>
   </section>
 
-  <div class="cta-section">
-    <div class="cta-box">
-      <div class="cta-copy">
-        <h2>오늘부터 합격을 준비하세요</h2>
-        <p>무료로 시작할 수 있습니다. 별도 설치 불필요.</p>
+    <section class="cta">
+      <div>
+        <div class="eyebrow" style="color:#9fe7cf">READY TO START</div>
+        <h3>Ship your next pass result with structured momentum.</h3>
       </div>
-      <button class="btn-white" id="cta-start-btn">무료로 시작하기 →</button>
+      <button class="btn-light" id="cta-start-btn">Start free →</button>
+    </section>
+  </div>
+</main>
+
+<footer class="rich-footer">
+  <div class="rich-footer-top">
+    <div class="rich-footer-brand">
+      <a href="/" class="n-logo">
+        <img src="/assets/shape_logo.svg?v=20260425fix3" alt="cortie symbol" class="brand-mark">
+        <img src="/assets/text_logo.svg?v=20260425fix3" alt="cortie" class="brand-text">
+      </a>
+      <p>Cortie is an AI-first software brand focused on execution, web usability, and network-aware reliability.</p>
+    </div>
+
+    <div class="rich-footer-col">
+      <h4>Platform</h4>
+      <a href="https://cortie.io/about">About</a>
+      <a href="https://cortie.io/services">Services</a>
+      <a href="https://cortie.io/works">Works</a>
+      <a href="https://cortie.io/lab">Lab</a>
+    </div>
+
+    <div class="rich-footer-col">
+      <h4>Developers</h4>
+      <a href="https://cortie.io/docs">Docs</a>
+      <a href="https://cortie.io/api">API Center</a>
+      <a href="https://cortie.io/api/auth">Auth API</a>
+      <a href="https://cortie.io/developers">Developer Console</a>
+      <a href="https://cortie.io/changelog">Changelog</a>
+      <a href="https://cortie.io/contact">Integration Support</a>
+  </div>
+
+    <div class="rich-footer-col">
+      <h4>Operating Status</h4>
+      <div class="rich-status"><i></i>Auth Service · Operational</div>
+      <div class="rich-status"><i></i>Main Web · Operational</div>
+      <div class="rich-status"><i></i>Session Exchange · Healthy</div>
     </div>
   </div>
 
-  <footer>
-    <div class="f-logo">
-      <div class="logo-mark" style="width:22px;height:22px;border-radius:6px"><svg viewBox="0 0 15 15" style="width:11px;height:11px"><path d="M7.5 1.5l2 4 4.4.6-3.2 3.1.8 4.4-4-2.1-4 2.1.8-4.4-3.2-3.1 4.4-.6z"/></svg></div>
-      Passio
-    </div>
-    <div class="f-copy">© 2026 Passio · AI 자격증 학습 플랫폼</div>
-  </footer>
-  </div>
+  <div class="rich-footer-bottom">
+    <div class="rich-copy">© 2026 CORTIE · ALL RIGHTS RESERVED</div>
+    <div class="rich-copy">01 · CONTACT · CAREERS · PRIVACY · TERMS</div>
 </div>
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
-$('home-login-btn').onclick = () => location.href = '/pages/login.html';
-$('home-start-btn').onclick = () => location.href = '/pages/signup.html';
-$('hero-cta').onclick = () => location.href = '/pages/signup.html';
-$('cta-start-btn').onclick = () => location.href = '/pages/signup.html';
-$('hero-learn').onclick = () => $('features').scrollIntoView({ behavior: 'smooth' });
-
-(async () => {
-  try {
-    const r = await fetch('/api/auth/me', { credentials: 'same-origin' });
-    if (!r.ok) return;
-    const d = await r.json();
-    const user = d.user?.name || d.user?.username || '학습자';
-    const nav = document.querySelector('.nav-r');
-    nav.innerHTML = '<span class="nav-user">' + user + '</span>' +
-      '<button class="btn btn-out btn-sm" id="logout-btn">로그아웃</button>' +
-      '<button class="btn btn-navy btn-sm" id="go-quiz-btn">학습하기</button>';
-    $('logout-btn').onclick = async () => {
-      try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch (e) {}
-      location.reload();
-    };
-    $('go-quiz-btn').onclick = () => location.href = '/pages/dashboard.html';
-  } catch (e) {}
-})();
+$('hero-cta')?.addEventListener('click', ()=> location.href='/pages/signup.html');
+$('cta-start-btn')?.addEventListener('click', ()=> location.href='/pages/signup.html');
+$('hero-learn')?.addEventListener('click', ()=> $('features')?.scrollIntoView({behavior:'smooth'}));
+(async()=>{try{const r=await fetch('/api/auth/me',{credentials:'same-origin'});if(!r.ok)return;const d=await r.json();const user=d.user?.name||d.user?.username||'Learner';const nav=document.querySelector('.n-actions');nav.innerHTML='<span class="n-user">'+user+'</span><button class="n-login" id="logout-btn">Logout</button><a class="n-start" href="/pages/dashboard.html">Study</a>';$('logout-btn')?.addEventListener('click',async()=>{try{await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin'});}catch(e){}location.reload();});}catch(e){}})();
 </script>
+
+<script src="/assets/cortie-global-nav.js?v=20260425-nav-1"></script>
+<script src="/assets/js/passio-shell.js?v=20260425-shell2"></script>
 </body>
 </html>
