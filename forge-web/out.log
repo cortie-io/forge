@@ -1,0 +1,104 @@
+nohup: ignoring input
+> Ready on http://localhost:3000
+ ○ Compiling / ...
+ ✓ Compiled / in 20.1s (473 modules)
+ HEAD / 200 in 20984ms
+ GET / 200 in 193ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1686ms (462 modules)
+ GET /_next/webpack-hmr 404 in 1947ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 621ms (468 modules)
+ GET /chat 200 in 151ms
+ GET /_next/webpack-hmr 404 in 41ms
+ GET / 200 in 115ms
+ GET /chat 200 in 35ms
+ GET /_next/webpack-hmr 404 in 36ms
+ GET / 200 in 111ms
+ ✓ Compiled in 950ms (227 modules)
+ ✓ Compiled in 169ms (227 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 725ms (234 modules)
+ GET / 200 in 1137ms
+ GET / 200 in 98ms
+ ✓ Compiled /chat in 300ms (238 modules)
+ GET /chat 200 in 706ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1023ms (468 modules)
+ GET /wp-includes/wlwmanifest.xml 404 in 1340ms
+ GET /_next/webpack-hmr 404 in 64ms
+ GET /xmlrpc.php?rsd 404 in 46ms
+ GET / 200 in 101ms
+ GET /blog/wp-includes/wlwmanifest.xml 404 in 49ms
+ GET /chat 200 in 59ms
+ GET /web/wp-includes/wlwmanifest.xml 404 in 66ms
+ GET /_next/webpack-hmr 404 in 36ms
+ GET /wordpress/wp-includes/wlwmanifest.xml 404 in 42ms
+ GET /website/wp-includes/wlwmanifest.xml 404 in 37ms
+ GET /wp/wp-includes/wlwmanifest.xml 404 in 35ms
+ GET /news/wp-includes/wlwmanifest.xml 404 in 37ms
+ GET /2018/wp-includes/wlwmanifest.xml 404 in 370ms
+ GET /2019/wp-includes/wlwmanifest.xml 404 in 36ms
+ GET /shop/wp-includes/wlwmanifest.xml 404 in 29ms
+ GET /wp1/wp-includes/wlwmanifest.xml 404 in 47ms
+ GET /test/wp-includes/wlwmanifest.xml 404 in 32ms
+ GET /media/wp-includes/wlwmanifest.xml 404 in 62ms
+ GET /wp2/wp-includes/wlwmanifest.xml 404 in 31ms
+ GET /site/wp-includes/wlwmanifest.xml 404 in 25ms
+ GET /cms/wp-includes/wlwmanifest.xml 404 in 30ms
+ GET /sito/wp-includes/wlwmanifest.xml 404 in 27ms
+ GET /chat 200 in 56ms
+ GET /_next/webpack-hmr 404 in 28ms
+ GET / 200 in 127ms
+ ✓ Compiled in 3.2s (475 modules)
+ GET / 200 in 293ms
+ ✓ Compiled in 693ms (475 modules)
+ ✓ Compiled in 972ms (227 modules)
+ ✓ Compiled in 291ms (227 modules)
+ ✓ Compiled in 442ms (227 modules)
+ GET / 200 in 347ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 2.3s (464 modules)
+ GET /api/channel 404 in 2559ms
+ GET /api/status 404 in 53ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 1050ms (222 modules)
+ GET /chat 200 in 1378ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 834ms (452 modules)
+ GET /_next/webpack-hmr 404 in 1111ms
+ GET /chat 200 in 71ms
+ GET /_next/webpack-hmr 404 in 43ms
+ GET /chat 200 in 84ms
+ GET /_next/webpack-hmr 404 in 55ms
+ ○ Compiling / ...
+ ✓ Compiled / in 743ms (239 modules)
+ ✓ Compiled in 4.7s (227 modules)
+ ✓ Compiled in 1606ms (227 modules)
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 4.2s (222 modules)
+ GET /chat 200 in 7046ms
+ ○ Compiling / ...
+ ✓ Compiled /_not-found in 7.3s (468 modules)
+ GET /_next/webpack-hmr 404 in 19996ms
+ GET / 200 in 23766ms
+ GET /_next/webpack-hmr 404 in 245ms
+ ✓ Compiled in 10.6s (227 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 3.6s (234 modules)
+ GET / 200 in 6158ms
+ ○ Compiling /chat ...
+ ✓ Compiled /chat in 5.7s (222 modules)
+ GET /chat 200 in 8340ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled / in 8.6s (468 modules)
+ GET /_next/webpack-hmr 404 in 14394ms
+ GET / 200 in 6969ms
+ GET / 200 in 3431ms
+ GET /_next/webpack-hmr 404 in 240ms
+ GET /chat 200 in 4972ms
+ GET /_next/static/css/app/layout.css?v=1778082993637 404 in 7285ms
+ GET /_next/static/chunks/webpack.js?v=1778082993637 404 in 7135ms
+ GET /_next/static/chunks/main-app.js?v=1778082993637 404 in 7132ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 3128ms
+ GET /_next/static/chunks/app/chat/page.js 404 in 2966ms

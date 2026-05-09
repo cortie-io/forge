@@ -1,0 +1,32 @@
+ ⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at /home/ubuntu/zero to scale/forge-web/node_modules/next/dist/server/lib/start-server.js:280:16
+    at new Promise (<anonymous>)
+    at startServer (/home/ubuntu/zero to scale/forge-web/node_modules/next/dist/server/lib/start-server.js:191:11)
+    at Module.nextStart (/home/ubuntu/zero to scale/forge-web/node_modules/next/dist/cli/next-start.js:25:40)
+    at /home/ubuntu/zero to scale/forge-web/node_modules/next/dist/bin/next:105:856 {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+ ⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at /home/ubuntu/zero to scale/forge-web/node_modules/next/dist/server/lib/start-server.js:280:16
+    at new Promise (<anonymous>)
+    at startServer (/home/ubuntu/zero to scale/forge-web/node_modules/next/dist/server/lib/start-server.js:191:11)
+    at Module.nextStart (/home/ubuntu/zero to scale/forge-web/node_modules/next/dist/cli/next-start.js:25:40)
+    at /home/ubuntu/zero to scale/forge-web/node_modules/next/dist/bin/next:105:856 {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}

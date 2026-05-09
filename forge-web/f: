@@ -1,0 +1,31 @@
+                                                                       Table "public.questions"
+        Column        |           Type           | Collation | Nullable |                Default                | Storage  | Compression | Stats target | Description 
+----------------------+--------------------------+-----------+----------+---------------------------------------+----------+-------------+--------------+-------------
+ id                   | bigint                   |           | not null | nextval('questions_id_seq'::regclass) | plain    |             |              | 
+ subject              | text                     |           | not null |                                       | extended |             |              | 
+ question             | text                     |           | not null |                                       | extended |             |              | 
+ option1              | text                     |           | not null |                                       | extended |             |              | 
+ option2              | text                     |           | not null |                                       | extended |             |              | 
+ option3              | text                     |           | not null |                                       | extended |             |              | 
+ option4              | text                     |           | not null |                                       | extended |             |              | 
+ answer               | smallint                 |           | not null |                                       | plain    |             |              | 
+ explanation          | text                     |           |          |                                       | extended |             |              | 
+ search_query         | text                     |           |          |                                       | extended |             |              | 
+ query_terms          | text                     |           |          |                                       | extended |             |              | 
+ ontology_subject     | text                     |           |          |                                       | extended |             |              | 
+ ontology_chapter     | text                     |           |          |                                       | extended |             |              | 
+ ontology_concept     | text                     |           |          |                                       | extended |             |              | 
+ concept_tags         | jsonb                    |           | not null | '[]'::jsonb                           | extended |             |              | 
+ ontology_coordinates | jsonb                    |           | not null | '[]'::jsonb                           | extended |             |              | 
+ ontology_tagged_at   | timestamp with time zone |           |          |                                       | plain    |             |              | 
+Indexes:
+    "questions_pkey" PRIMARY KEY, btree (id)
+    "questions_concept_tags_gin" gin (concept_tags)
+    "questions_ontology_subject_chapter_idx" btree (ontology_subject, ontology_chapter) WHERE ontology_chapter IS NOT NULL
+    "questions_subject_idx" btree (subject)
+Check constraints:
+    "questions_answer_check" CHECK (answer >= 1 AND answer <= 4)
+Referenced by:
+    TABLE "quiz_attempt_answers" CONSTRAINT "quiz_attempt_answers_question_id_fkey" FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE SET NULL
+Access method: heap
+

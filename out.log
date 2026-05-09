@@ -1,0 +1,3 @@
+nohup: ignoring input
+npm warn exec The following package was not found and will be installed: next@16.2.4
+Invalid project directory provided, no such directory: /home/ubuntu/zero to scale/3000

@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge — AI 자격증 튜터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07080a;
+  --surface: #0f1011;
+  --surface-2: #161718;
+  --surface-3: #1c1d1f;
+  --border: rgba(255,255,255,0.055);
+  --border-mid: rgba(255,255,255,0.09);
+  --border-strong: rgba(255,255,255,0.16);
+  --text: #f5f5f5;
+  --text-2: #c8c8c9;
+  --text-3: #8e8f90;
+  --text-4: #5a5b5c;
+  --text-5: #38393a;
+  --red: #FF6363;
+  --red-2: #ff4d4d;
+  --red-dim: hsla(0,100%,69%,0.12);
+  --red-glow: hsla(0,100%,69%,0.06);
+  --blue: #55b3ff;
+  --blue-dim: hsla(202,100%,67%,0.1);
+  --green: #5fc992;
+  --green-dim: hsla(151,59%,59%,0.12);
+  --yellow: #ffbc33;
+  --shadow-card: rgb(0,0,0) 0px 0px 0px 1px, rgba(255,255,255,0.03) 0px 1px 0px 0px inset;
+  --shadow-card-hover: rgb(40,41,43) 0px 0px 0px 1px, rgba(255,255,255,0.05) 0px 1px 0px 0px inset;
+  --shadow-btn: rgba(255,255,255,0.06) 0px 1px 0px 0px inset, rgba(255,255,255,0.08) 0px 0px 0px 1px, rgba(0,0,0,0.3) 0px -1px 0px 0px inset;
+  --shadow-elevated: 0 24px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "calt","kern","liga","ss03";
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 16px;
+  line-height: 1.6; -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; overflow-x: hidden;
+}
+
+/* ══════════ NAV ══════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 60px; display: flex; align-items: center;
+  padding: 0 48px; justify-content: space-between;
+  background: rgba(7,8,10,0.75); backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 11px;
+  text-decoration: none; color: var(--text);
+  font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+}
+/* SVG logo mark */
+.logo-mark { flex-shrink: 0; }
+.nav-center { display: flex; align-items: center; gap: 36px; }
+.nav-center a {
+  font-size: 14px; font-weight: 500; color: var(--text-3);
+  text-decoration: none; letter-spacing: 0.2px;
+  transition: color 0.15s; padding: 4px 0;
+  position: relative;
+}
+.nav-center a::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 1px; background: var(--red); transform: scaleX(0);
+  transition: transform 0.2s; transform-origin: left;
+}
+.nav-center a:hover { color: var(--text); }
+.nav-center a:hover::after { transform: scaleX(1); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-link-btn {
+  font-size: 14px; font-weight: 500; color: var(--text-3);
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font); padding: 6px 4px;
+  transition: color 0.15s;
+}
+.nav-link-btn:hover { color: var(--text); }
+.nav-cta {
+  background: var(--red); color: white; border: none;
+  border-radius: 8px; padding: 8px 20px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); letter-spacing: 0.1px;
+  transition: opacity 0.15s;
+  box-shadow: 0 0 20px rgba(255,99,99,0.3), var(--shadow-btn);
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* ══════════ LANDING ══════════ */
+#landing { display: block; }
+#chat-view { display: none; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 140px 48px 80px; text-align: center;
+  position: relative; overflow: hidden;
+}
+
+/* Grid background */
+.hero-grid {
+  position: absolute; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+/* Glow orbs */
+.hero-glow-1 {
+  position: absolute; width: 800px; height: 500px;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(255,99,99,0.08) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+.hero-glow-2 {
+  position: absolute; width: 400px; height: 300px;
+  top: 20%; left: 20%;
+  background: radial-gradient(ellipse, rgba(85,179,255,0.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.hero-glow-3 {
+  position: absolute; width: 300px; height: 200px;
+  top: 30%; right: 15%;
+  background: radial-gradient(ellipse, rgba(95,201,146,0.04) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+.hero-content { position: relative; z-index: 1; max-width: 760px; }
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border-mid);
+  border-radius: 100px; padding: 6px 16px 6px 10px;
+  margin-bottom: 32px; box-shadow: var(--shadow-card);
+}
+.eyebrow-badge {
+  background: var(--red); color: white; border-radius: 100px;
+  padding: 2px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+}
+.eyebrow-text { font-size: 13px; font-weight: 500; color: var(--text-3); letter-spacing: 0.2px; }
+
+.hero h1 {
+  font-size: clamp(44px, 6.5vw, 72px); font-weight: 600;
+  line-height: 1.08; letter-spacing: -0.025em;
+  color: var(--text); margin-bottom: 24px;
+  font-feature-settings: "kern","ss02","ss08";
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--red) 0%, #ff8f8f 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 18px; font-weight: 400; color: var(--text-3);
+  line-height: 1.7; letter-spacing: 0.15px;
+  max-width: 520px; margin: 0 auto 40px;
+}
+.hero-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 56px; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red); color: white; border: none;
+  border-radius: 10px; padding: 13px 28px;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); letter-spacing: 0.1px;
+  transition: all 0.15s;
+  box-shadow: 0 0 28px rgba(255,99,99,0.35), 0 4px 12px rgba(255,99,99,0.2), var(--shadow-btn);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 36px rgba(255,99,99,0.45), 0 8px 20px rgba(255,99,99,0.25), var(--shadow-btn); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.04); color: var(--text-2);
+  border: 1px solid var(--border-mid);
+  border-radius: 10px; padding: 13px 24px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: var(--font); letter-spacing: 0.1px;
+  transition: all 0.15s; box-shadow: var(--shadow-btn);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.07); border-color: var(--border-strong); color: var(--text); }
+
+/* Hero social proof */
+.hero-proof {
+  display: flex; align-items: center; gap: 20px; justify-content: center;
+  flex-wrap: wrap;
+}
+.proof-avatars {
+  display: flex; align-items: center;
+}
+.proof-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--bg); margin-left: -8px; first-child { margin-left: 0; }
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 600;
+}
+.proof-avatar:first-child { margin-left: 0; }
+.pa-1 { background: #3a6dff; color: white; }
+.pa-2 { background: #2ecc71; color: white; }
+.pa-3 { background: #e67e22; color: white; }
+.pa-4 { background: #9b59b6; color: white; }
+.pa-5 { background: #e74c3c; color: white; }
+.proof-text { font-size: 13px; font-weight: 500; color: var(--text-3); letter-spacing: 0.1px; }
+.proof-text strong { color: var(--text-2); }
+.proof-divider { width: 1px; height: 20px; background: var(--border-mid); }
+.proof-rating { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-3); }
+.stars { display: flex; gap: 2px; }
+.star { color: var(--yellow); font-size: 12px; }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  max-width: 900px; margin: 0 auto;
+  padding: 0 48px 80px;
+}
+.stats-inner {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; box-shadow: var(--shadow-card);
+  position: relative; overflow: hidden;
+}
+.stats-inner::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,99,99,0.3), transparent);
+}
+.stat-item {
+  text-align: center; padding: 0 24px;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-size: 32px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.03em; line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-num span { color: var(--red); }
+.stat-label { font-size: 13px; color: var(--text-4); font-weight: 500; letter-spacing: 0.2px; }
+
+/* ── SECTION COMMON ── */
+.section { padding: 80px 48px; max-width: 1160px; margin: 0 auto; }
+.section-header { margin-bottom: 56px; }
+.section-kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; color: var(--red);
+  letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px;
+}
+.section-kicker::before {
+  content: ''; display: inline-block; width: 16px; height: 1px; background: var(--red);
+}
+.section-title {
+  font-size: clamp(28px, 3.5vw, 44px); font-weight: 500;
+  color: var(--text); line-height: 1.18; letter-spacing: -0.015em;
+  max-width: 540px;
+}
+.section-title em { font-style: normal; color: var(--red); }
+.section-desc { font-size: 16px; color: var(--text-3); line-height: 1.7; max-width: 480px; margin-top: 14px; }
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border-radius: 20px; overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.feature-card {
+  background: var(--surface); padding: 36px 32px;
+  position: relative; overflow: hidden;
+  transition: background 0.2s;
+}
+.feature-card:hover { background: var(--surface-2); }
+.feature-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+}
+.feature-card-large {
+  grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+}
+.feature-icon-wrap {
+  width: 44px; height: 44px; border-radius: 12px;
+  border: 1px solid var(--border-mid); display: flex; align-items: center;
+  justify-content: center; margin-bottom: 20px; position: relative;
+  background: var(--surface-3);
+}
+.fi-red { border-color: rgba(255,99,99,0.3); background: rgba(255,99,99,0.08); }
+.fi-blue { border-color: rgba(85,179,255,0.3); background: rgba(85,179,255,0.08); }
+.fi-green { border-color: rgba(95,201,146,0.3); background: rgba(95,201,146,0.08); }
+.fi-yellow { border-color: rgba(255,188,51,0.3); background: rgba(255,188,51,0.08); }
+.feature-card h3 {
+  font-size: 17px; font-weight: 600; color: var(--text);
+  margin-bottom: 10px; letter-spacing: -0.01em;
+}
+.feature-card p { font-size: 14px; color: var(--text-3); line-height: 1.7; letter-spacing: 0.1px; }
+/* decorative dot grid on feature card */
+.card-dots {
+  position: absolute; bottom: 20px; right: 20px; width: 80px; height: 60px;
+  opacity: 0.25;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+
+/* ── HOW IT WORKS ── */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.step-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px 28px; position: relative;
+  box-shadow: var(--shadow-card); overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.step-card:hover { border-color: rgba(255,99,99,0.2); box-shadow: 0 0 32px rgba(255,99,99,0.04), var(--shadow-card); }
+.step-num {
+  font-size: 13px; font-weight: 700; color: var(--red);
+  letter-spacing: 0.5px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.step-num::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,99,99,0.3), transparent); }
+.step-card h3 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 10px; letter-spacing: -0.01em; }
+.step-card p { font-size: 14px; color: var(--text-3); line-height: 1.7; }
+.step-connector {
+  position: absolute; right: -13px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; background: var(--bg); border: 1px solid var(--border-mid);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  z-index: 10; font-size: 10px; color: var(--text-4);
+}
+
+/* ── CERT GRID ── */
+.cert-grid-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.cert-grid-inner { max-width: 1160px; margin: 0 auto; padding: 64px 48px; }
+.cert-categories { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.cert-cat-btn {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px;
+  font-size: 13px; font-weight: 500; color: var(--text-4);
+  cursor: pointer; font-family: var(--font); transition: all 0.15s;
+}
+.cert-cat-btn:hover, .cert-cat-btn.active { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+.cert-tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.cert-tag {
+  background: var(--surface-3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 16px;
+  font-size: 13px; font-weight: 500; color: var(--text-3);
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.1px;
+  display: flex; align-items: center; gap: 6px;
+}
+.cert-tag:hover { border-color: var(--border-strong); color: var(--text); background: rgba(255,255,255,0.04); }
+.cert-tag .ct-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-mid); }
+.cert-tag.popular .ct-dot { background: var(--green); }
+.cert-popular-label {
+  font-size: 10px; font-weight: 700; color: var(--green);
+  background: var(--green-dim); border-radius: 4px; padding: 1px 6px; letter-spacing: 0.4px;
+}
+
+/* ── TESTIMONIAL ── */
+.testimonial-section { padding: 80px 48px; max-width: 1160px; margin: 0 auto; }
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.testimonial-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px;
+  box-shadow: var(--shadow-card); position: relative;
+  transition: border-color 0.2s;
+}
+.testimonial-card:hover { border-color: var(--border-mid); }
+.tcard-stars { display: flex; gap: 2px; margin-bottom: 14px; }
+.tcard-star { color: var(--yellow); font-size: 13px; }
+.tcard-text { font-size: 14px; color: var(--text-2); line-height: 1.75; margin-bottom: 20px; font-style: italic; }
+.tcard-text::before { content: '"'; color: var(--red); font-style: normal; font-size: 18px; line-height: 0; vertical-align: -3px; margin-right: 2px; }
+.tcard-author { display: flex; align-items: center; gap: 10px; }
+.tcard-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.tcard-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 1px; }
+.tcard-cert { font-size: 12px; color: var(--text-4); }
+.tcard-badge {
+  position: absolute; top: 20px; right: 20px;
+  background: var(--green-dim); border: 1px solid rgba(95,201,146,0.2);
+  border-radius: 6px; padding: 2px 8px;
+  font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.3px;
+}
+
+/* ── CTA SECTION ── */
+.cta-section {
+  margin: 0 48px 80px; border-radius: 24px;
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-card); overflow: hidden; position: relative;
+  padding: 80px 64px; text-align: center;
+}
+.cta-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,99,99,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,99,99,0.4), transparent);
+}
+.cta-section h2 {
+  font-size: clamp(28px, 4vw, 48px); font-weight: 600;
+  color: var(--text); letter-spacing: -0.02em; line-height: 1.15;
+  margin-bottom: 16px; position: relative;
+}
+.cta-section p { font-size: 16px; color: var(--text-3); margin-bottom: 36px; position: relative; }
+.cta-actions { display: flex; gap: 12px; justify-content: center; position: relative; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 48px;
+  max-width: 1160px; margin: 0 auto;
+}
+.footer-top { display: flex; justify-content: space-between; margin-bottom: 40px; gap: 32px; }
+.footer-brand { max-width: 240px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.footer-logo-text { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.footer-brand p { font-size: 13px; color: var(--text-4); line-height: 1.65; }
+.footer-links { display: flex; gap: 64px; }
+.footer-col h4 { font-size: 13px; font-weight: 600; color: var(--text-2); margin-bottom: 16px; letter-spacing: 0.1px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col ul li a { font-size: 13px; color: var(--text-4); text-decoration: none; transition: color 0.15s; letter-spacing: 0.1px; }
+.footer-col ul li a:hover { color: var(--text-2); }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--border); }
+.footer-bottom p { font-size: 12px; color: var(--text-5); letter-spacing: 0.2px; }
+.footer-badges { display: flex; gap: 8px; }
+.footer-badge {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-weight: 600; color: var(--text-4); letter-spacing: 0.3px;
+}
+
+/* ══════════════════════════════════════
+   CHAT VIEW
+══════════════════════════════════════ */
+#chat-view { height: 100vh; flex-direction: column; }
+.chat-layout { display: flex; height: 100vh; padding-top: 60px; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 272px; flex-shrink: 0;
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sidebar-top { padding: 20px 16px; border-bottom: 1px solid var(--border); }
+.sidebar-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; cursor: pointer; }
+.sidebar-logo-text { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+.new-chat-btn {
+  width: 100%; background: rgba(255,99,99,0.08); border: 1px solid rgba(255,99,99,0.2);
+  border-radius: 9px; padding: 9px 14px; color: var(--red);
+  font-size: 13px; font-weight: 600; cursor: pointer; text-align: left;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.15s; font-family: var(--font);
+}
+.new-chat-btn:hover { background: rgba(255,99,99,0.13); border-color: rgba(255,99,99,0.35); }
+.new-chat-icon { font-size: 16px; line-height: 1; }
+
+.sidebar-scroll { flex: 1; overflow-y: auto; padding-bottom: 16px; }
+.sidebar-scroll::-webkit-scrollbar { width: 3px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+.sb-section { padding: 16px 12px 4px; }
+.sb-label {
+  font-size: 10px; font-weight: 700; color: var(--text-5);
+  letter-spacing: 0.9px; text-transform: uppercase; padding: 0 6px; margin-bottom: 6px;
+}
+.cert-list { display: flex; flex-direction: column; gap: 1px; }
+.cert-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 9px; cursor: pointer;
+  transition: background 0.12s; font-size: 13px; font-weight: 500; color: var(--text-3);
+  border: 1px solid transparent;
+}
+.cert-item:hover { background: rgba(255,255,255,0.04); color: var(--text-2); }
+.cert-item.active { background: rgba(255,99,99,0.08); color: var(--text); border-color: rgba(255,99,99,0.15); }
+.ci-icon {
+  width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0; background: var(--surface-2);
+}
+.cert-item.active .ci-icon { border-color: rgba(255,99,99,0.2); background: rgba(255,99,99,0.08); }
+.ci-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-badge {
+  font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.ci-hot { background: rgba(255,188,51,0.15); color: var(--yellow); }
+.ci-new { background: var(--blue-dim); color: var(--blue); }
+
+.history-list { display: flex; flex-direction: column; gap: 1px; }
+.history-item {
+  padding: 7px 10px; border-radius: 7px; cursor: pointer;
+  font-size: 12px; color: var(--text-4); transition: all 0.12s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 6px;
+}
+.history-item::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: currentColor; flex-shrink: 0; opacity: 0.5; }
+.history-item:hover { background: rgba(255,255,255,0.04); color: var(--text-3); }
+
+.sidebar-bottom {
+  padding: 12px 16px; border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-radius: 8px;
+  cursor: pointer; transition: background 0.12s;
+}
+.sb-user:hover { background: rgba(255,255,255,0.04); }
+.sb-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), #ff8f8f);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+}
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-user-plan { font-size: 11px; color: var(--text-4); }
+.sb-plan-badge { color: var(--yellow); font-weight: 600; }
+
+/* ── CHAT MAIN ── */
+.chat-main { flex: 1; display: flex; flex-direction: column; min-width: 0; background: var(--bg); }
+
+.chat-topbar {
+  height: 56px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; flex-shrink: 0;
+  background: rgba(7,8,10,0.8); backdrop-filter: blur(12px);
+}
+.chat-topbar-left { display: flex; align-items: center; gap: 12px; }
+.chat-cert-icon {
+  width: 32px; height: 32px; border-radius: 9px;
+  border: 1px solid var(--border-mid); background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+.chat-cert-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.chat-cert-sub { font-size: 12px; color: var(--text-4); }
+.chat-topbar-right { display: flex; align-items: center; gap: 8px; }
+.topbar-tag {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 4px 12px;
+  font-size: 12px; font-weight: 600; color: var(--text-4); letter-spacing: 0.2px;
+}
+.topbar-icon-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-3); font-size: 15px;
+  transition: all 0.12s; font-family: var(--font);
+}
+.topbar-icon-btn:hover { background: var(--surface-2); color: var(--text); }
+
+/* ── MESSAGES ── */
+.messages {
+  flex: 1; overflow-y: auto; padding: 28px 0 8px;
+  display: flex; flex-direction: column;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+/* date separator */
+.msg-date {
+  text-align: center; font-size: 11px; font-weight: 600; color: var(--text-5);
+  letter-spacing: 0.5px; padding: 12px 0; display: flex; align-items: center;
+  gap: 12px; margin: 0 28px;
+}
+.msg-date::before, .msg-date::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.msg-group { padding: 2px 28px; position: relative; }
+.msg-group:hover { background: rgba(255,255,255,0.012); }
+.msg-group:hover .msg-actions { opacity: 1; }
+
+.msg-row { display: flex; gap: 13px; align-items: flex-start; }
+.msg-avatar {
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; margin-top: 2px;
+}
+.ma-ai {
+  background: var(--red); color: white;
+  box-shadow: 0 0 12px rgba(255,99,99,0.3);
+}
+.ma-user {
+  background: var(--surface-3); border: 1px solid var(--border-mid); color: var(--text-3);
+  font-size: 10px;
+}
+.msg-body { flex: 1; min-width: 0; padding: 4px 0 10px; }
+.msg-meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.msg-name { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0px; }
+.msg-time { font-size: 11px; color: var(--text-5); }
+.msg-text { font-size: 15px; color: var(--text-2); line-height: 1.75; letter-spacing: 0.05px; }
+.msg-text p { margin-bottom: 10px; }
+.msg-text p:last-child { margin-bottom: 0; }
+.msg-text strong { color: var(--text); font-weight: 600; }
+.msg-text em { color: var(--text-3); font-style: italic; }
+.msg-text code {
+  background: var(--surface-3); border: 1px solid var(--border-mid);
+  border-radius: 5px; padding: 1px 7px;
+  font-family: 'SF Mono','Menlo',monospace; font-size: 13px; color: var(--blue);
+  white-space: nowrap;
+}
+.msg-text ul, .msg-text ol { padding-left: 20px; margin: 8px 0; }
+.msg-text li { margin-bottom: 5px; color: var(--text-2); }
+.msg-text h4 { font-size: 15px; font-weight: 600; color: var(--text); margin: 14px 0 6px; }
+/* quiz option */
+.quiz-option {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 16px; margin: 4px 0;
+  font-size: 14px; color: var(--text-2); cursor: pointer;
+  transition: all 0.15s; font-family: var(--font); text-align: left; width: 100%;
+  display: flex; align-items: center; gap: 10px;
+}
+.quiz-option:hover { border-color: var(--border-mid); color: var(--text); background: var(--surface-2); }
+.quiz-option.correct { border-color: rgba(95,201,146,0.4); background: var(--green-dim); color: var(--green); }
+.quiz-option.wrong { border-color: rgba(255,99,99,0.3); background: var(--red-dim); color: var(--red); }
+.qo-num {
+  width: 22px; height: 22px; border-radius: 6px; border: 1px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; opacity: 0.7; flex-shrink: 0;
+}
+
+.msg-actions {
+  display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s;
+  margin-top: 6px;
+}
+.msg-action {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-weight: 500; color: var(--text-4);
+  cursor: pointer; font-family: var(--font); transition: all 0.12s;
+}
+.msg-action:hover { color: var(--text-2); border-color: var(--border-mid); }
+
+/* typing */
+.typing-wrap { padding: 8px 28px; display: flex; gap: 13px; align-items: center; }
+.typing-indicator { display: flex; gap: 4px; align-items: center; }
+.typing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-4); animation: blink 1.3s infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%,80%,100%{opacity:0.25} 40%{opacity:1} }
+
+/* ── EMPTY STATE ── */
+.chat-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 28px; text-align: center;
+}
+.empty-icon-wrap {
+  position: relative; margin-bottom: 24px;
+}
+.empty-icon {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: var(--red); display: flex; align-items: center; justify-content: center;
+  font-size: 28px; position: relative; z-index: 1;
+  box-shadow: 0 0 0 1px rgba(255,99,99,0.3), 0 0 40px rgba(255,99,99,0.2);
+}
+.empty-glow {
+  position: absolute; inset: -16px;
+  background: radial-gradient(circle, rgba(255,99,99,0.12) 0%, transparent 70%);
+}
+.chat-empty h2 { font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: 8px; letter-spacing: -0.01em; }
+.chat-empty > p { font-size: 14px; color: var(--text-3); max-width: 360px; line-height: 1.7; margin-bottom: 32px; }
+.example-qs { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 440px; }
+.example-q {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; padding: 12px 18px; text-align: left;
+  font-size: 14px; font-weight: 500; color: var(--text-3);
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center;
+  justify-content: space-between; font-family: var(--font);
+  box-shadow: var(--shadow-card);
+}
+.example-q:hover { border-color: rgba(255,99,99,0.25); color: var(--text); background: rgba(255,99,99,0.04); }
+.eq-icon { font-size: 16px; opacity: 0.6; }
+
+/* ── INPUT ── */
+.input-zone { padding: 12px 28px 20px; flex-shrink: 0; }
+.input-outer {
+  background: var(--surface); border: 1px solid var(--border-mid);
+  border-radius: 14px; box-shadow: var(--shadow-card), 0 4px 16px rgba(0,0,0,0.2);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+}
+.input-outer:focus-within {
+  border-color: rgba(255,99,99,0.3);
+  box-shadow: var(--shadow-card), 0 4px 16px rgba(0,0,0,0.2), 0 0 0 3px rgba(255,99,99,0.07);
+}
+.input-main {
+  display: flex; align-items: flex-end; gap: 8px; padding: 12px 14px 12px 18px;
+}
+#msg-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--font);
+  font-size: 15px; line-height: 1.6; resize: none;
+  max-height: 140px; min-height: 24px; letter-spacing: 0.05px;
+}
+#msg-input::placeholder { color: var(--text-5); }
+#msg-input::-webkit-scrollbar { width: 3px; }
+#msg-input::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.input-actions { display: flex; align-items: center; gap: 6px; }
+.input-tool-btn {
+  width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+  background: transparent; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; color: var(--text-4); font-size: 14px; transition: all 0.12s;
+  font-family: var(--font);
+}
+.input-tool-btn:hover { background: var(--surface-2); color: var(--text-3); border-color: var(--border-mid); }
+.send-btn {
+  width: 34px; height: 34px; border-radius: 9px; border: none;
+  background: var(--red); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; box-shadow: 0 0 12px rgba(255,99,99,0.3);
+}
+.send-btn:hover { opacity: 0.85; transform: scale(1.03); }
+.send-btn:disabled { opacity: 0.3; cursor: default; transform: none; box-shadow: none; }
+.send-btn svg { width: 14px; height: 14px; fill: white; }
+.input-footer {
+  padding: 8px 18px 10px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.input-hint { font-size: 11px; color: var(--text-5); letter-spacing: 0.2px; }
+.kbd-hint { display: flex; align-items: center; gap: 4px; }
+.kbd {
+  background: var(--surface-3); border: 1px solid var(--border-mid);
+  border-radius: 4px; padding: 1px 6px;
+  font-size: 10px; font-weight: 600; color: var(--text-4);
+  box-shadow: rgba(255,255,255,0.04) 0 1px 0 inset, rgba(0,0,0,0.3) 0 1px 3px;
+}
+.input-mode-label { font-size: 11px; color: var(--text-5); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.msg-group { animation: fadeUp 0.18s ease both; }
+.hero-content { animation: fadeUp 0.5s ease 0.1s both; }
+.hero-eyebrow { animation: fadeUp 0.4s ease 0s both; }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <a class="nav-logo" href="#" onclick="showLanding();return false;">
+    <!-- Forge Logo SVG -->
+    <svg class="logo-mark" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="30" height="30" rx="8" fill="#FF6363"/>
+      <!-- Anvil-inspired geometric F mark -->
+      <path d="M7 8h16v3.5H18v2.5h4.5v3H18V22h-4V8z" fill="white" opacity="0.95"/>
+      <rect x="7" y="8" width="7" height="3.5" fill="white"/>
+      <!-- spark accent -->
+      <circle cx="23" cy="7" r="1.5" fill="white" opacity="0.7"/>
+      <circle cx="25" cy="10" r="1" fill="white" opacity="0.5"/>
+    </svg>
+    Forge
+  </a>
+  <div class="nav-center">
+    <a href="#">기능</a>
+    <a href="#">자격증</a>
+    <a href="#">학습법</a>
+    <a href="#">가격</a>
+    <a href="#">기업 솔루션</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-link-btn">로그인</button>
+    <button class="nav-cta" onclick="showChat()">무료 시작하기 →</button>
+  </div>
+</nav>
+
+<!-- ══════════ LANDING PAGE ══════════ -->
+<div id="landing">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+  <div class="hero-glow-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="eyebrow-badge">NEW</span>
+      <span class="eyebrow-text">Claude AI 기반 자격증 학습 플랫폼 출시</span>
+    </div>
+    <h1>자격증 합격을<br><em>단련</em>하는 방법</h1>
+    <p class="hero-sub">AI 튜터가 24시간 개념을 설명하고, 오답을 분석하고, 취약점을 공략합니다. 단순 암기가 아닌 진짜 이해로 합격을 만드세요.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showChat()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M13 2L4.09 12.97 12 12.45 11 22l8.91-10.97L12 11.55 13 2z"/></svg>
+        지금 무료로 시작하기
+      </button>
+      <button class="btn-secondary" onclick="showChat()">
+        데모 체험하기
+      </button>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-avatars">
+        <div class="proof-avatar pa-1">김</div>
+        <div class="proof-avatar pa-2">이</div>
+        <div class="proof-avatar pa-3">박</div>
+        <div class="proof-avatar pa-4">최</div>
+        <div class="proof-avatar pa-5">정</div>
+      </div>
+      <div class="proof-text"><strong>12,400명+</strong> 수험생이 합격했습니다</div>
+      <div class="proof-divider"></div>
+      <div class="proof-rating">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        4.9 / 5.0 평점
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">12<span>,4</span>00<span>+</span></div>
+      <div class="stat-label">합격 수험생</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">58<span>+</span></div>
+      <div class="stat-label">지원 자격증</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2.1<span>M+</span></div>
+      <div class="stat-label">풀이된 문제 수</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">94<span>%</span></div>
+      <div class="stat-label">목표 달성률</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-kicker">핵심 기능</div>
+    <h2 class="section-title">합격에 필요한 것만,<br><em>정확하게</em></h2>
+    <p class="section-desc">단순한 문제 풀이 앱이 아닙니다. AI가 학습 패턴을 분석해 최단 경로로 합격을 설계합니다.</p>
+  </div>
+  <div class="features-grid">
+
+    <!-- Large card -->
+    <div class="feature-card feature-card-large">
+      <div>
+        <div class="feature-icon-wrap fi-red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6363" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><path d="M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M5.64 18.36l2.12-2.12M16.24 7.76l2.12-2.12"/></svg>
+        </div>
+        <h3>취약점 AI 진단</h3>
+        <p>풀이 기록을 분석해 어떤 개념이 부족한지 자동으로 파악합니다. 무작정 전 범위를 공부하는 대신, 점수 향상에 직결되는 파트를 집중 공략합니다.</p>
+      </div>
+      <div>
+        <div class="feature-icon-wrap fi-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#55b3ff" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>24시간 AI 튜터 질의응답</h3>
+        <p>교재에서 이해 안 되는 부분을 언제든 질문하세요. 개념을 쉽게 풀어 설명하고, 예시와 함께 반복 학습을 도와드립니다.</p>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap fi-green">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5fc992" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <h3>실전형 모의고사</h3>
+      <p>실제 시험과 동일한 유형과 난이도. 풀이 후 즉시 해설을 제공하고, 오답 원인을 분석합니다.</p>
+      <div class="card-dots"></div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap fi-yellow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffbc33" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <h3>학습 진도 추적</h3>
+      <p>과목별 정답률, 학습 시간, 오답 패턴을 시각화합니다. D-Day까지 최적 커리큘럼으로 학습 계획을 자동 조정합니다.</p>
+      <div class="card-dots"></div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap fi-red">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6363" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <h3>개념 심화 설명</h3>
+      <p>암기가 아닌 이해. 각 개념의 원리와 실제 적용 사례를 함께 설명해 장기 기억을 돕습니다.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-wrap fi-blue">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#55b3ff" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <h3>스트릭 & 목표 관리</h3>
+      <p>매일 꾸준한 학습 습관을 위한 연속 학습 기록. 목표 날짜를 설정하면 일별 학습량을 자동으로 배분합니다.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0">
+  <div class="section-header">
+    <div class="section-kicker">시작하는 방법</div>
+    <h2 class="section-title">3단계로<br>학습을 시작합니다</h2>
+  </div>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">STEP 01</div>
+      <h3>자격증 선택</h3>
+      <p>목표 자격증을 선택하고 시험 날짜를 입력하세요. AI가 최적의 학습 커리큘럼을 자동으로 구성합니다.</p>
+      <div class="step-connector">→</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 02</div>
+      <h3>AI 튜터와 학습</h3>
+      <p>개념 질문, 문제 풀이, 오답 분석을 자유롭게 진행합니다. 막히는 부분은 언제든 물어보세요.</p>
+      <div class="step-connector">→</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 03</div>
+      <h3>취약점 집중 보완</h3>
+      <p>AI가 분석한 취약 파트를 집중적으로 반복하고, 실전 모의고사로 합격 준비를 마무리합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CERT SECTION -->
+<div class="cert-grid-section">
+  <div class="cert-grid-inner">
+    <div class="section-header" style="margin-bottom:28px">
+      <div class="section-kicker">지원 자격증</div>
+      <h2 class="section-title" style="font-size:32px">국내외 주요 자격증 58종 지원</h2>
+    </div>
+    <div class="cert-categories">
+      <button class="cert-cat-btn active">전체</button>
+      <button class="cert-cat-btn">IT 국가자격</button>
+      <button class="cert-cat-btn">클라우드</button>
+      <button class="cert-cat-btn">데이터베이스</button>
+      <button class="cert-cat-btn">보안</button>
+      <button class="cert-cat-btn">네트워크</button>
+      <button class="cert-cat-btn">데이터/AI</button>
+    </div>
+    <div class="cert-tags-wrap">
+      <span class="cert-tag popular"><span class="ct-dot"></span>정보처리기사<span class="cert-popular-label">인기</span></span>
+      <span class="cert-tag popular"><span class="ct-dot"></span>SQLD<span class="cert-popular-label">인기</span></span>
+      <span class="cert-tag"><span class="ct-dot"></span>정보보안기사</span>
+      <span class="cert-tag"><span class="ct-dot"></span>네트워크관리사 1급</span>
+      <span class="cert-tag"><span class="ct-dot"></span>컴퓨터활용능력 1급</span>
+      <span class="cert-tag popular"><span class="ct-dot"></span>AWS SAA<span class="cert-popular-label">인기</span></span>
+      <span class="cert-tag"><span class="ct-dot"></span>AWS SAP</span>
+      <span class="cert-tag"><span class="ct-dot"></span>AWS DVA</span>
+      <span class="cert-tag"><span class="ct-dot"></span>리눅스마스터 1급</span>
+      <span class="cert-tag"><span class="ct-dot"></span>리눅스마스터 2급</span>
+      <span class="cert-tag"><span class="ct-dot"></span>SQLP</span>
+      <span class="cert-tag popular"><span class="ct-dot"></span>빅데이터분석기사<span class="cert-popular-label">인기</span></span>
+      <span class="cert-tag"><span class="ct-dot"></span>ADsP</span>
+      <span class="cert-tag"><span class="ct-dot"></span>정보처리산업기사</span>
+      <span class="cert-tag"><span class="ct-dot"></span>CCNA</span>
+      <span class="cert-tag"><span class="ct-dot"></span>CCNP</span>
+      <span class="cert-tag"><span class="ct-dot"></span>구글 클라우드 ACE</span>
+      <span class="cert-tag"><span class="ct-dot"></span>Azure AZ-900</span>
+      <span class="cert-tag"><span class="ct-dot"></span>정보시스템감리사</span>
+      <span class="cert-tag"><span class="ct-dot"></span>전자계산기조직응용기사</span>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonial-section">
+  <div class="section-header">
+    <div class="section-kicker">합격 후기</div>
+    <h2 class="section-title">실제 합격자들의<br>이야기</h2>
+  </div>
+  <div class="testimonial-grid">
+    <div class="testimonial-card">
+      <div class="tcard-badge">합격</div>
+      <div class="tcard-stars"><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span></div>
+      <p class="tcard-text">정보처리기사를 세 번 떨어졌는데 Forge로 공부한 후 처음으로 합격했습니다. AI가 제 오답 패턴을 분석해줘서 어디를 집중해야 할지 명확해졌어요.</p>
+      <div class="tcard-author">
+        <div class="tcard-avatar" style="background:linear-gradient(135deg,#3a6dff,#7c9fff)">김</div>
+        <div>
+          <div class="tcard-name">김재원</div>
+          <div class="tcard-cert">정보처리기사 합격 · 2024.11</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="tcard-badge">합격</div>
+      <div class="tcard-stars"><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span></div>
+      <p class="tcard-text">새벽에도 막히는 개념을 바로 질문할 수 있어서 좋았습니다. AWS SAA를 한 달 반 만에 합격했어요. 교재보다 훨씬 이해하기 쉽게 설명해줍니다.</p>
+      <div class="tcard-author">
+        <div class="tcard-avatar" style="background:linear-gradient(135deg,#2ecc71,#7defa1)">이</div>
+        <div>
+          <div class="tcard-name">이서연</div>
+          <div class="tcard-cert">AWS SAA 합격 · 2025.01</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="tcard-badge">합격</div>
+      <div class="tcard-stars"><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span><span class="tcard-star">★</span></div>
+      <p class="tcard-text">SQLD 처음 준비할 때 SQL 기초가 부족했는데, 기초부터 차근차근 설명해주는 방식이 정말 도움됐습니다. 개념 이해 없이 암기만 했던 과거와 달랐어요.</p>
+      <div class="tcard-author">
+        <div class="tcard-avatar" style="background:linear-gradient(135deg,#e67e22,#f5a55a)">박</div>
+        <div>
+          <div class="tcard-name">박민준</div>
+          <div class="tcard-cert">SQLD 합격 · 2025.02</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div style="max-width:1160px; margin:0 auto;">
+  <div class="cta-section">
+    <h2>지금 바로 합격을<br>준비하세요</h2>
+    <p>첫 7일은 완전 무료. 신용카드 불필요.</p>
+    <div class="cta-actions">
+      <button class="btn-primary" onclick="showChat()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M13 2L4.09 12.97 12 12.45 11 22l8.91-10.97L12 11.55 13 2z"/></svg>
+        무료로 시작하기
+      </button>
+      <button class="btn-secondary">기업 문의하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg width="26" height="26" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="8" fill="#FF6363"/><path d="M7 8h16v3.5H18v2.5h4.5v3H18V22h-4V8z" fill="white" opacity="0.95"/><rect x="7" y="8" width="7" height="3.5" fill="white"/><circle cx="23" cy="7" r="1.5" fill="white" opacity="0.7"/></svg>
+        <span class="footer-logo-text">Forge</span>
+      </div>
+      <p>AI 기반 자격증 학습 플랫폼. 단순 암기가 아닌 진짜 이해로 합격을 만듭니다.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>서비스</h4>
+        <ul>
+          <li><a href="#">자격증 목록</a></li>
+          <li><a href="#">AI 튜터</a></li>
+          <li><a href="#">모의고사</a></li>
+          <li><a href="#">학습 진도</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>회사</h4>
+        <ul>
+          <li><a href="#">소개</a></li>
+          <li><a href="#">블로그</a></li>
+          <li><a href="#">채용</a></li>
+          <li><a href="#">문의하기</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>법률</h4>
+        <ul>
+          <li><a href="#">이용약관</a></li>
+          <li><a href="#">개인정보처리방침</a></li>
+          <li><a href="#">환불 정책</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Forge. All rights reserved.</p>
+    <div class="footer-badges">
+      <span class="footer-badge">Powered by Claude</span>
+      <span class="footer-badge">한국어</span>
+    </div>
+  </div>
+</footer>
+
+</div><!-- end #landing -->
+
+
+<!-- ══════════ CHAT VIEW ══════════ -->
+<div id="chat-view">
+  <div class="chat-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-logo" onclick="showLanding()">
+          <svg width="22" height="22" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="8" fill="#FF6363"/><path d="M7 8h16v3.5H18v2.5h4.5v3H18V22h-4V8z" fill="white" opacity="0.95"/><rect x="7" y="8" width="7" height="3.5" fill="white"/></svg>
+          <span class="sidebar-logo-text">Forge</span>
+        </div>
+        <button class="new-chat-btn" onclick="newChat()">
+          <span class="new-chat-icon">+</span>새 대화 시작
+        </button>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="sb-section">
+          <p class="sb-label">자격증 선택</p>
+          <div class="cert-list" id="cert-list">
+            <div class="cert-item active" data-cert="정보처리기사" data-emoji="🎓" data-sub="소프트웨어 개발, 데이터베이스, 시스템 분석 전 과목" onclick="selectCert(this)">
+              <div class="ci-icon">🎓</div>
+              <span class="ci-label">정보처리기사</span>
+              <span class="ci-badge ci-hot">인기</span>
+            </div>
+            <div class="cert-item" data-cert="SQLD" data-emoji="🗄️" data-sub="SQL 기본 및 활용, 데이터 모델링, 쿼리 최적화" onclick="selectCert(this)">
+              <div class="ci-icon">🗄️</div>
+              <span class="ci-label">SQLD</span>
+              <span class="ci-badge ci-hot">인기</span>
+            </div>
+            <div class="cert-item" data-cert="AWS SAA" data-emoji="☁️" data-sub="Solutions Architect Associate — 클라우드 아키텍처 설계" onclick="selectCert(this)">
+              <div class="ci-icon">☁️</div>
+              <span class="ci-label">AWS SAA</span>
+            </div>
+            <div class="cert-item" data-cert="빅데이터분석기사" data-emoji="📊" data-sub="빅데이터 기획, 탐색, 분석, 시각화 전 과목" onclick="selectCert(this)">
+              <div class="ci-icon">📊</div>
+              <span class="ci-label">빅데이터분석기사</span>
+            </div>
+            <div class="cert-item" data-cert="정보보안기사" data-emoji="🔐" data-sub="시스템 보안, 네트워크 보안, 암호학, 보안 관리" onclick="selectCert(this)">
+              <div class="ci-icon">🔐</div>
+              <span class="ci-label">정보보안기사</span>
+              <span class="ci-badge ci-new">NEW</span>
+            </div>
+            <div class="cert-item" data-cert="리눅스마스터" data-emoji="🐧" data-sub="리눅스 명령어, 시스템 관리, 네트워크 설정" onclick="selectCert(this)">
+              <div class="ci-icon">🐧</div>
+              <span class="ci-label">리눅스마스터</span>
+            </div>
+            <div class="cert-item" data-cert="네트워크관리사" data-emoji="🌐" data-sub="TCP/IP, 라우팅, 스위칭, 보안 프로토콜" onclick="selectCert(this)">
+              <div class="ci-icon">🌐</div>
+              <span class="ci-label">네트워크관리사</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sb-section" id="history-section" style="display:none">
+          <p class="sb-label">최근 대화</p>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sb-user">
+          <div class="sb-avatar">나</div>
+          <div class="sb-user-info">
+            <div class="sb-user-name">학습자</div>
+            <div class="sb-user-plan"><span class="sb-plan-badge">Free</span> 플랜</div>
+          </div>
+          <div style="color:var(--text-4);font-size:16px">⚙</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CHAT -->
+    <main class="chat-main">
+      <div class="chat-topbar">
+        <div class="chat-topbar-left">
+          <div class="chat-cert-icon" id="topbar-icon">🎓</div>
+          <div>
+            <div class="chat-cert-name" id="topbar-name">정보처리기사 튜터</div>
+            <div class="chat-cert-sub" id="topbar-sub">소프트웨어 개발, 데이터베이스, 시스템 분석 전 과목</div>
+          </div>
+        </div>
+        <div class="chat-topbar-right">
+          <span class="topbar-tag">Claude Sonnet 4</span>
+          <button class="topbar-icon-btn" title="모의고사 모드" onclick="sendExample('모의고사 문제 5개 내줘')">📝</button>
+          <button class="topbar-icon-btn" title="핵심 요약" onclick="sendExample('이 과목 핵심 키워드 30개 요약해줘')">⚡</button>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div class="chat-empty" id="empty-state">
+        <div class="empty-icon-wrap">
+          <div class="empty-glow"></div>
+          <div class="empty-icon" id="empty-icon">🎓</div>
+        </div>
+        <h2 id="empty-title">정보처리기사 튜터</h2>
+        <p id="empty-desc">개념 질문, 문제 풀이, 오답 분석까지 무엇이든 물어보세요. 합격할 때까지 함께합니다.</p>
+        <div class="example-qs" id="example-qs">
+          <button class="example-q" onclick="sendExample('OSI 7계층을 예시와 함께 쉽게 설명해줘')">
+            OSI 7계층을 예시와 함께 쉽게 설명해줘 <span class="eq-icon">→</span>
+          </button>
+          <button class="example-q" onclick="sendExample('정규화 1NF, 2NF, 3NF 차이를 표로 정리해줘')">
+            정규화 1NF, 2NF, 3NF 차이를 표로 정리해줘 <span class="eq-icon">→</span>
+          </button>
+          <button class="example-q" onclick="sendExample('소프트웨어 개발 생명주기(SDLC) 모델 종류와 특징 알려줘')">
+            소프트웨어 개발 생명주기(SDLC) 모델 종류와 특징 알려줘 <span class="eq-icon">→</span>
+          </button>
+          <button class="example-q" onclick="sendExample('모의고사 문제 5개 내줘')">
+            모의고사 문제 5개 내줘 <span class="eq-icon">→</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="messages" id="messages" style="display:none"></div>
+
+      <!-- INPUT -->
+      <div class="input-zone">
+        <div class="input-outer">
+          <div class="input-main">
+            <textarea id="msg-input" placeholder="질문을 입력하세요..." rows="1"
+              onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <div class="input-actions">
+              <button class="input-tool-btn" title="파일 첨부">📎</button>
+              <button class="send-btn" id="send-btn" onclick="sendMessage()">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="input-footer">
+            <div class="kbd-hint">
+              <span class="kbd">Enter</span>
+              <span class="input-hint">전송</span>
+              <span style="color:var(--text-5);margin:0 4px">·</span>
+              <span class="kbd">Shift</span><span class="kbd">Enter</span>
+              <span class="input-hint">줄바꿈</span>
+            </div>
+            <span class="input-mode-label" id="input-mode">💡 AI 튜터 모드</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div><!-- end #chat-view -->
+
+<script>
+  let currentCert = '정보처리기사';
+  let currentEmoji = '🎓';
+  let messages = [];
+  let isLoading = false;
+  let historyItems = [];
+
+  const examples = {
+    '정보처리기사': [
+      'OSI 7계층을 예시와 함께 쉽게 설명해줘',
+      '정규화 1NF, 2NF, 3NF 차이를 표로 정리해줘',
+      '소프트웨어 개발 생명주기(SDLC) 모델 종류와 특징 알려줘',
+      '모의고사 문제 5개 내줘'
+    ],
+    'SQLD': [
+      'GROUP BY와 HAVING의 차이점을 예시로 설명해줘',
+      'INNER JOIN과 LEFT JOIN 차이점 알려줘',
+      '윈도우 함수 ROW_NUMBER, RANK 차이를 예시로 보여줘',
+      'SQLD 모의고사 문제 5개 내줘'
+    ],
+    'AWS SAA': [
+      'S3와 EBS, EFS의 차이점을 정리해줘',
+      'VPC, 서브넷, 보안 그룹 개념을 쉽게 설명해줘',
+      'Auto Scaling과 Load Balancer는 언제 쓰나요?',
+      'AWS SAA 모의고사 문제 5개 내줘'
+    ],
+    '빅데이터분석기사': [
+      '데이터 전처리 단계에서 결측값 처리 방법을 알려줘',
+      '분류 모델에서 정밀도와 재현율의 차이를 설명해줘',
+      '빅데이터 기술 스택(Hadoop, Spark) 차이를 설명해줘',
+      '빅데이터분석기사 모의고사 문제 5개 내줘'
+    ],
+    '정보보안기사': [
+      '대칭키와 비대칭키 암호화 차이를 설명해줘',
+      'SQL 인젝션 공격 원리와 방어 방법을 알려줘',
+      'PKI 인증서 발급 과정을 단계별로 설명해줘',
+      '정보보안기사 모의고사 문제 5개 내줘'
+    ],
+    '리눅스마스터': [
+      'chmod와 chown 명령어 사용법을 예시로 알려줘',
+      'cron 스케줄러 설정 방법을 예시와 함께 설명해줘',
+      '프로세스 관리 명령어(ps, kill, top)를 정리해줘',
+      '리눅스마스터 모의고사 문제 5개 내줘'
+    ],
+    '네트워크관리사': [
+      'TCP 3-way handshake 과정을 단계별로 설명해줘',
+      'OSPF와 BGP 라우팅 프로토콜 차이를 알려줘',
+      'VLAN이란 무엇이고 어떻게 구성하나요?',
+      '네트워크관리사 모의고사 문제 5개 내줘'
+    ]
+  };
+
+  function showLanding() {
+    document.getElementById('landing').style.display = 'block';
+    document.getElementById('chat-view').style.display = 'none';
+  }
+
+  function showChat() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('chat-view').style.display = 'flex';
+    setTimeout(() => document.getElementById('msg-input').focus(), 100);
+  }
+
+  function selectCert(el) {
+    document.querySelectorAll('.cert-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    currentCert = el.dataset.cert;
+    currentEmoji = el.dataset.emoji || '📚';
+    const sub = el.dataset.sub || '';
+
+    document.getElementById('topbar-icon').textContent = currentEmoji;
+    document.getElementById('topbar-name').textContent = currentCert + ' 튜터';
+    document.getElementById('topbar-sub').textContent = sub;
+    document.getElementById('empty-icon').textContent = currentEmoji;
+    document.getElementById('empty-title').textContent = currentCert + ' 튜터';
+    document.getElementById('empty-desc').textContent = `${currentCert} 개념 질문, 문제 풀이, 오답 분석까지. 합격할 때까지 함께합니다.`;
+
+    const eqs = document.getElementById('example-qs');
+    const qs = examples[currentCert] || examples['정보처리기사'];
+    eqs.innerHTML = qs.map(q => `<button class="example-q" onclick="sendExample('${q.replace(/'/g,"\\'")}')"><span>${q}</span><span class="eq-icon">→</span></button>`).join('');
+
+    document.getElementById('input-mode').textContent = `💡 ${currentCert} 튜터 모드`;
+    newChat();
+  }
+
+  function newChat() {
+    messages = [];
+    document.getElementById('messages').innerHTML = '';
+    document.getElementById('messages').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'flex';
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function sendExample(text) {
+    document.getElementById('msg-input').value = text;
+    sendMessage();
+  }
+
+  function getTime() {
+    const d = new Date();
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  }
+
+  async function sendMessage() {
+    if (isLoading) return;
+    const input = document.getElementById('msg-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+
+    document.getElementById('empty-state').style.display = 'none';
+    const msgContainer = document.getElementById('messages');
+    msgContainer.style.display = 'flex';
+
+    addMessage('user', text);
+    messages.push({ role: 'user', content: text });
+
+    const typingEl = showTyping();
+    isLoading = true;
+    document.getElementById('send-btn').disabled = true;
+
+    try {
+      const systemPrompt = `당신은 ${currentCert} 자격증 전문 AI 튜터 "Forge"입니다.
+
+핵심 역할:
+- 수험생의 질문에 정확하고 이해하기 쉽게 답변합니다
+- 개념 설명 시 핵심 원리를 먼저 설명하고, 예시로 보완합니다
+- 모의고사 요청 시 실제 시험과 동일한 형식의 4지선다 문제를 출제합니다 (보기를 1. 2. 3. 4. 형식으로)
+- 오답 분석 시 왜 틀렸는지, 어떤 개념이 부족한지 구체적으로 설명합니다
+- 표나 목록이 필요한 경우 텍스트 형식으로 명확하게 정리합니다
+
+답변 스타일:
+- 한국어로 답변합니다
+- **볼드**로 핵심 용어를 강조합니다
+- 답변은 명확하고 구조적으로 구성합니다
+- 필요하면 단계별 설명을 사용합니다
+- 친근하지만 전문적인 톤을 유지합니다
+
+${currentCert} 자격증의 최신 출제 경향과 시험 범위를 반영하여 답변하세요.`;
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: systemPrompt,
+          messages: messages
+        })
+      });
+
+      typingEl.remove();
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || '응답을 받지 못했습니다. 잠시 후 다시 시도해주세요.';
+
+      messages.push({ role: 'assistant', content: reply });
+      addMessage('ai', reply);
+
+      if (messages.length === 2) {
+        addHistory(text.slice(0, 35) + (text.length > 35 ? '…' : ''));
+      }
+    } catch (err) {
+      typingEl.remove();
+      addMessage('ai', '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+
+  function formatText(text) {
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/^(#+)\s+(.+)$/gm, (_, h, t) => `<h4>${t}</h4>`)
+      .replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+      .replace(/\n\n+/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^(?!<)/, '<p>').replace(/(?!>)$/, '</p>')
+      .replace(/<p>\s*<\/p>/g, '');
+  }
+
+  function addMessage(role, text) {
+    const msgContainer = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'msg-group';
+    const isAI = role === 'ai';
+    const html = formatText(text);
+    const t = getTime();
+
+    div.innerHTML = `
+      <div class="msg-row">
+        <div class="msg-avatar ${isAI ? 'ma-ai' : 'ma-user'}">${isAI ? 'F' : '나'}</div>
+        <div class="msg-body">
+          <div class="msg-meta">
+            <span class="msg-name">${isAI ? 'Forge AI' : '나'}</span>
+            <span class="msg-time">${t}</span>
+          </div>
+          <div class="msg-text">${html}</div>
+          <div class="msg-actions">
+            ${isAI ? '<button class="msg-action">복사</button><button class="msg-action">다시 답변</button>' : ''}
+          </div>
+        </div>
+      </div>`;
+    msgContainer.appendChild(div);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+    // copy action
+    if (isAI) {
+      const copyBtn = div.querySelector('.msg-action');
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(text).catch(() => {});
+          copyBtn.textContent = '복사됨 ✓';
+          setTimeout(() => copyBtn.textContent = '복사', 1500);
+        };
+      }
+      const regenBtn = div.querySelectorAll('.msg-action')[1];
+      if (regenBtn) {
+        regenBtn.onclick = () => {
+          if (messages.length >= 2) {
+            const lastUser = [...messages].reverse().find(m => m.role === 'user');
+            if (lastUser) { messages = messages.slice(0, -1); sendMessage(); }
+          }
+        };
+      }
+    }
+  }
+
+  function showTyping() {
+    const msgContainer = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = 'typing-wrap';
+    div.innerHTML = `
+      <div class="msg-avatar ma-ai">F</div>
+      <div class="typing-indicator">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>`;
+    msgContainer.appendChild(div);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+    return div;
+  }
+
+  function addHistory(label) {
+    historyItems.unshift(label);
+    const hs = document.getElementById('history-section');
+    const list = document.getElementById('history-list');
+    hs.style.display = 'block';
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.textContent = label;
+    list.insertBefore(div, list.firstChild);
+  }
+
+  // cert category filter (landing)
+  document.querySelectorAll('.cert-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cert-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

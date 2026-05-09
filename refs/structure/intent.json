@@ -1,0 +1,32 @@
+{
+    "forge_intent_system": {
+      "intent_types": {
+        "QUIZ_REQUEST": {
+          "description": "문제 풀이 및 시험 관련 요청",
+          "actions": ["GET_RANDOM_QUESTION", "START_MOCK_EXAM", "GET_WRONG_ANSWER_NOTE"],
+          "required_metadata": ["subject_focus", "count"]
+        },
+        "CONCEPT_EXPLAIN": {
+          "description": "특정 개념에 대한 정의 및 원리 설명 요청",
+          "actions": ["RAG_RETRIEVAL", "CONCEPT_COMPARISON"],
+          "required_metadata": ["coordinate", "entities"]
+        },
+        "FOLLOWUP_QUESTION": {
+          "description": "이전 답변에 대한 심화 질문이나 예시 요청",
+          "actions": ["CONTEXTUAL_CHAT", "REPAIR_AUDIT"],
+          "required_metadata": ["history_context", "depth_level"]
+        },
+        "SYSTEM_CONTROL": {
+          "description": "학습 통계 확인 및 결과물 생성",
+          "actions": ["GENERATE_PDF", "SHOW_STATISTICS", "RESET_SESSION"],
+          "required_metadata": ["user_id", "target_data"]
+        }
+      },
+      "knowledge_mapping_template": {
+        "subject": "1과목~5과목 중 선택",
+        "chapter": "해당 과목의 대분류 (예: 전송_매체, IP_주소)",
+        "concept": "세부 핵심 키워드 (예: UTP, IPv6)",
+        "hierarchy_path": "subject > chapter > concept"
+      }
+    }
+  }
