@@ -1,20 +1,136 @@
-import pandas as pd
-import time
+from __future__ import annotations
 
-def run_gemma_only(input_csv, output_csv):
-    df = pd.read_csv(input_csv)
-    results = []
-    start_time = time.time()
-    for idx, row in df.iterrows():
-        # TODO: GEMMA 모델에 row['문제']와 보기들을 입력하여 해설 생성
-        explanation = "GEMMA 해설 결과 (여기에 실제 해설 삽입)"
-        results.append({**row, 'GEMMA_해설': explanation})
-    elapsed = time.time() - start_time
-    pd.DataFrame(results).to_csv(output_csv, index=False)
-    print(f"[실험군: GEMMA Only] 120문제 처리 소요 시간: {elapsed:.2f}초")
+import argparse
+import json
+import time
+from typing import Any, Dict, List
+
+import pandas as pd
+import requests
+
+from common import (
+    QuestionRow,
+    build_question_blob,
+    canonical_explanation,
+    extract_json_object,
+    format_compliance_score,
+    load_questions,
+    parse_choice,
+)
+
+
+def build_prompt(row: QuestionRow) -> str:
+    return (
+        "너는 네트워크관리사 2급 튜터다. 아래 문제를 보고 반드시 JSON으로만 답하라.\n"
+        "JSON 스키마: {\"answer\":\"1~4\",\"reason\":\"...\",\"elimination\":{\"1\":\"...\",\"2\":\"...\",\"3\":\"...\",\"4\":\"...\"},\"summary\":\"...\"}\n"
+        "규칙: answer는 숫자만, elimination은 4개 모두 채워라.\n\n"
+        f"{build_question_blob(row)}"
+    )
+
+
+def call_ollama(prompt: str, model: str, host: str, timeout: int) -> str:
+    url = host.rstrip("/") + "/api/generate"
+    resp = requests.post(
+        url,
+        json={"model": model, "prompt": prompt, "stream": False, "format": "json", "options": {"temperature": 0}},
+        timeout=timeout,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return str(data.get("response", "") or "")
+
+
+def run_gemma_only(input_csv: str, output_csv: str, model: str, host: str, limit: int, timeout: int) -> None:
+    import sys
+    rows = load_questions(input_csv, limit=limit)
+    total = len(rows)
+    out_rows: List[Dict[str, Any]] = []
+    raw_json_path = output_csv.replace(".csv", "_raw.jsonl")
+
+    print(f"[A: LLM-only] 시작 — {total}문제 | 모델: {model} | 호스트: {host}", flush=True)
+
+    with open(raw_json_path, "w", encoding="utf-8") as jf:
+        for idx, row in enumerate(rows, start=1):
+            started = time.time()
+            predicted = ""
+            explanation = ""
+            raw_response = ""
+            error = ""
+            try:
+                raw_response = call_ollama(build_prompt(row), model=model, host=host, timeout=timeout)
+                parsed = extract_json_object(raw_response)
+                predicted = parse_choice(str(parsed.get("answer", "")))
+                elimination = parsed.get("elimination") if isinstance(parsed.get("elimination"), dict) else {}
+                explanation = canonical_explanation(
+                    answer=predicted or "-",
+                    reason=str(parsed.get("reason", "")).strip() or "근거를 충분히 생성하지 못했습니다.",
+                    elimination={str(k): str(v) for k, v in elimination.items()},
+                    summary=str(parsed.get("summary", "")).strip() or "핵심 개념을 다시 확인하세요.",
+                )
+            except Exception as exc:
+                error = str(exc)
+                explanation = canonical_explanation(
+                    answer="-",
+                    reason="모델 호출 실패",
+                    elimination={"1": "", "2": "", "3": "", "4": ""},
+                    summary="재시도 필요",
+                )
+
+            elapsed = time.time() - started
+            row_data = {
+                "mode": "llm_only",
+                "index": idx,
+                "과목": row.subject,
+                "문제": row.question,
+                "보기1": row.options[0],
+                "보기2": row.options[1],
+                "보기3": row.options[2],
+                "보기4": row.options[3],
+                "답": row.answer,
+                "AI_정답": predicted,
+                "is_correct": int(predicted == row.answer),
+                "해설": explanation,
+                "RAG_근거": "",
+                "format_score": format_compliance_score(explanation),
+                "latency_sec": round(elapsed, 3),
+                "error": error,
+            }
+            out_rows.append(row_data)
+
+            # raw JSON 저장
+            jf.write(json.dumps({"index": idx, "raw_response": raw_response, "parsed": row_data}, ensure_ascii=False) + "\n")
+            jf.flush()
+
+            # 실시간 진행률
+            pct = idx / total * 100
+            correct_so_far = sum(r["is_correct"] for r in out_rows)
+            mark = "✓" if row_data["is_correct"] else "✗"
+            q_short = row.question[:30].replace("\n", " ")
+            print(f"[A | {idx:3d}/{total} | {pct:5.1f}%] {mark} AI:{predicted or '-'} 정답:{row.answer} ({elapsed:.1f}s) | 누적정답률:{correct_so_far/idx*100:.1f}% | {q_short}…", flush=True)
+
+    pd.DataFrame(out_rows).to_csv(output_csv, index=False, encoding="utf-8-sig")
+    correct_total = sum(r["is_correct"] for r in out_rows)
+    print(f"\n[A: LLM-only 완료] rows={total} | 정답률={correct_total/total*100:.1f}% | CSV={output_csv} | JSONL={raw_json_path}", flush=True)
+
+
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser()
+    p.add_argument("--input", default="sample_120_questions.csv")
+    p.add_argument("--output", default="results/gemma_only_results.csv")
+    p.add_argument("--model", default="gemma3:latest")
+    p.add_argument("--host", default="http://127.0.0.1:11434")
+    p.add_argument("--limit", type=int, default=0)
+    p.add_argument("--timeout", type=int, default=180)
+    return p.parse_args()
+
 
 if __name__ == "__main__":
+    args = parse_args()
     run_gemma_only(
-        "sample_120_questions.csv",
-        "results/gemma_only_results.csv"
+        input_csv=args.input,
+        output_csv=args.output,
+        model=args.model,
+        host=args.host,
+        limit=args.limit,
+        timeout=args.timeout,
     )

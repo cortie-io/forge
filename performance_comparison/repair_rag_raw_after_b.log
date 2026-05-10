@@ -1,0 +1,5 @@
+nohup: ignoring input
+[WAIT] waiting for rag_with_gemma.py to finish...
+[DONE] repaired raw file: results/rag_with_gemma_results_raw.jsonl
+[INFO] backup: results/rag_with_gemma_results_raw.jsonl.bak_20260509_050635
+[INFO] valid_lines=118 bad_lines=1 recovered=2 final_rows=120
